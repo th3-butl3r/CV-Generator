@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV Match</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface-hover: #21263a;
+      --border: #2d3148;
+      --accent: #6c63ff;
+      --accent-hover: #5a52e0;
+      --text: #e2e4f0;
+      --muted: #7b7f9e;
+      --success: #4ade80;
+      --error: #f87171;
+      --radius: 12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    header h1 span { color: var(--accent); }
+
+    header p {
+      color: var(--muted);
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .field { margin-bottom: 1.5rem; }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="url"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+      padding: 0.7rem 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="url"]:focus { border-color: var(--accent); }
+    input[type="url"]::placeholder { color: var(--muted); }
+
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 2rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: var(--accent);
+      background: var(--surface-hover);
+    }
+
+    .drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .drop-zone .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+    .drop-zone .label {
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-transform: none;
+      letter-spacing: normal;
+      font-weight: 400;
+    }
+
+    .drop-zone .label strong { color: var(--accent); }
+
+    .file-name {
+      margin-top: 0.6rem;
+      font-size: 0.85rem;
+      color: var(--success);
+      min-height: 1.2rem;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+      margin-top: 0.5rem;
+    }
+
+    button[type="submit"]:hover:not(:disabled) { background: var(--accent-hover); }
+    button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Spinner */
+    .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Result panel */
+    #result {
+      margin-top: 1.5rem;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.9rem;
+      display: none;
+      border: 1px solid var(--border);
+    }
+
+    #result.success { border-color: var(--success); background: rgba(74, 222, 128, 0.07); }
+    #result.error   { border-color: var(--error);   background: rgba(248, 113, 113, 0.07); }
+
+    #result .result-title {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    #result.success .result-title { color: var(--success); }
+    #result.error   .result-title { color: var(--error); }
+
+    #result pre {
+      background: var(--bg);
+      border-radius: 6px;
+      padding: 0.75rem;
+      overflow-x: auto;
+      font-size: 0.82rem;
+      color: var(--text);
+      margin-top: 0.5rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>CV <span>Match</span></h1>
+    <p>Analiza qué tan bien encaja tu perfil con una oferta laboral.</p>
+  </header>
+
+  <div class="card">
+    <form id="form">
+
+      <div class="field">
+        <label for="job_url">URL de la oferta laboral</label>
+        <input
+          type="url"
+          id="job_url"
+          name="job_url"
+          placeholder="https://linkedin.com/jobs/..."
+          required
+        />
+      </div>
+
+      <div class="field">
+        <label>Tu CV (archivo .md)</label>
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="cv_file" name="cv_file" accept=".md" required />
+          <div class="icon">📄</div>
+          <div class="label">
+            Arrastra tu archivo aquí o <strong>haz clic para seleccionar</strong>
+          </div>
+        </div>
+        <div class="file-name" id="fileName"></div>
+      </div>
+
+      <button type="submit" id="submitBtn">Analizar</button>
+    </form>
+
+    <div id="result">
+      <div class="result-title" id="resultTitle"></div>
+      <div id="resultMsg"></div>
+      <pre id="resultJson"></pre>
+    </div>
+  </div>
+
+  <script>
+    const form      = document.getElementById('form');
+    const fileInput = document.getElementById('cv_file');
+    const dropZone  = document.getElementById('dropZone');
+    const fileName  = document.getElementById('fileName');
+    const submitBtn = document.getElementById('submitBtn');
+    const result    = document.getElementById('result');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultMsg   = document.getElementById('resultMsg');
+    const resultJson  = document.getElementById('resultJson');
+
+    // Drag & drop visual feedback
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        showFileName(e.dataTransfer.files[0].name);
+      }
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) showFileName(fileInput.files[0].name);
+    });
+
+    function showFileName(name) {
+      fileName.textContent = `✓ ${name}`;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setLoading(true);
+      result.style.display = 'none';
+
+      const data = new FormData(form);
+
+      try {
+        const res = await fetch('/api/v1/comparativa/', {
+          method: 'POST',
+          body: data,
+        });
+
+        const json = await res.json();
+
+        if (res.ok) {
+          showResult('success', 'Comparativa recibida', json.message, json);
+        } else {
+          const msg = json.detail ?? 'Error desconocido';
+          showResult('error', `Error ${res.status}`, msg, null);
+        }
+      } catch (err) {
+        showResult('error', 'Error de red', err.message, null);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    function setLoading(loading) {
+      submitBtn.disabled = loading;
+      submitBtn.innerHTML = loading
+        ? '<div class="spinner" style="display:block"></div>'
+        : 'Analizar';
+    }
+
+    function showResult(type, title, message, data) {
+      result.className = type;
+      result.style.display = 'block';
+      resultTitle.textContent = title;
+      resultMsg.textContent   = message;
+      resultJson.textContent  = data ? JSON.stringify(data, null, 2) : '';
+      resultJson.style.display = data ? 'block' : 'none';
+    }
+  </script>
+
+</body>
+</html>
