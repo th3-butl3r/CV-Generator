@@ -1,6 +1,6 @@
-from loguru import logger
+from config.settings import logger
 
-from src.schemas.comparativa import ComparativaResponse
+from schemas.comparativa import ComparativaResponse
 
 
 class ComparativaService:

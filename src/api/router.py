@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from src.api.endpoints.comparativa import router as comparativa_router
+from api.endpoints.comparativa import router as comparativa_router
 
 api_router = APIRouter()
 

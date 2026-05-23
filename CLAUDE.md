@@ -46,6 +46,8 @@ Python CV generator.
 
 ### Frontend
 - `src/web`: Todo lo relacionado a la interfaz gráfica debe de ir aquí.
+- `src/web/templates`: Todos los templates para CV que el usuario puede escoger para generar su CV.
+
 
 
 ## ⚠️ Lo que NUNCA debes hacer

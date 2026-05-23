@@ -1,9 +1,9 @@
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-from loguru import logger
+from config.settings import logger
 from pydantic import HttpUrl, ValidationError
 
-from src.schemas.comparativa import ComparativaResponse
-from src.services.comparativa import ComparativaService
+from schemas.comparativa import ComparativaResponse
+from services.comparativa import ComparativaService
 
 router = APIRouter()
 

@@ -310,6 +310,40 @@ Los modelos pueden alucinar estructura o romper el JSON.
 
 ---
 
+## ¿Qué es un LLM y cómo funciona en este pipeline?
+
+Un **Large Language Model (LLM)** es un modelo de red neuronal entrenado sobre enormes volúmenes de texto para predecir el siguiente token (fragmento de palabra) dado un contexto previo. A través de ese entrenamiento aprende gramática, hechos, razonamiento y formatos estructurados.
+
+### Ejemplo mínimo
+
+```
+Prompt:  "Clasifica este texto como positivo o negativo: 'Me encanta este producto'"
+Modelo:  calcula probabilidades sobre todos los tokens posibles como siguiente respuesta
+Salida:  "Positivo"
+```
+
+Internamente el modelo no "entiende" el texto: genera la respuesta token a token eligiendo el más probable dado el contexto. Con suficiente escala ese mecanismo produce salidas que parecen razonamiento.
+
+### Cómo lo usa este proyecto
+
+El LLM recibe un prompt estructurado con dos bloques:
+
+```
+[SISTEMA]  Eres un experto en selección de personal. Analiza la coincidencia
+           entre un CV y una oferta laboral. Devuelve SOLO JSON con este schema:
+           { match_score, summary, strengths, skill_gaps, recommendations }
+
+[USUARIO]  ## Oferta laboral
+           <texto extraído por scraping>
+
+           ## CV del candidato
+           <contenido del archivo .md subido>
+```
+
+El modelo responde con JSON que se parsea directamente en `ComparativaResult`. El truco es forzar `response_format={"type": "json_object"}` para que el modelo nunca salga del formato estructurado.
+
+---
+
 ## Resumen de dependencias a añadir
 
 | Dependencia | Grupo | Uso |
