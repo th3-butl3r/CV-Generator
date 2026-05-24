@@ -64,7 +64,9 @@ async def analyze_cv_match(
     logger.info(f"BL > analyze_cv_match() - Llamando LLM | model={model}")
 
     client = AsyncOpenAI(api_key=api_key, base_url=base_url, timeout=timeout)
-    user_message = f"## Oferta laboral\n{job_description}\n\n## CV del candidato\n{cv_content}"
+    user_message = (
+        f"## Oferta laboral\n{job_description}\n\n## CV del candidato\n{cv_content}"
+    )
 
     last_error: Exception | None = None
     for attempt in range(1, 3):
@@ -81,10 +83,16 @@ async def analyze_cv_match(
             raw = response.choices[0].message.content or ""
             data = _extract_json(raw)
             result = ComparativaResult(**data)
-            logger.info(f"BL > analyze_cv_match() - Análisis completado | score={result.match_score}")
+            logger.info(
+                f"BL > analyze_cv_match() - Análisis completado | score={result.match_score}"
+            )
             return result
         except Exception as exc:
-            logger.warning(f"BL > analyze_cv_match() - Error en intento {attempt} | {exc}")
+            logger.warning(
+                f"BL > analyze_cv_match() - Error en intento {attempt} | {exc}"
+            )
             last_error = exc
 
-    raise RuntimeError(f"El LLM no retornó un resultado válido tras 2 intentos: {last_error}")
+    raise RuntimeError(
+        f"El LLM no retornó un resultado válido tras 2 intentos: {last_error}"
+    )
