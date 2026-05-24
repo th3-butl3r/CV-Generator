@@ -176,25 +176,15 @@
     #result.success { border-color: var(--success); background: rgba(74, 222, 128, 0.07); }
     #result.error   { border-color: var(--error);   background: rgba(248, 113, 113, 0.07); }
 
-    #result .result-title {
+    #resultScore {
+      font-size: 2.5rem;
       font-weight: 700;
-      margin-bottom: 0.5rem;
+      color: var(--success);
+      display: none;
+      margin-bottom: 0.4rem;
     }
 
-    #result.success .result-title { color: var(--success); }
-    #result.error   .result-title { color: var(--error); }
-
-    #result pre {
-      background: var(--bg);
-      border-radius: 6px;
-      padding: 0.75rem;
-      overflow-x: auto;
-      font-size: 0.82rem;
-      color: var(--text);
-      margin-top: 0.5rem;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
+    #result.error #resultMsg { color: var(--error); }
   </style>
 </head>
 <body>
@@ -234,9 +224,8 @@
     </form>
 
     <div id="result">
-      <div class="result-title" id="resultTitle"></div>
+      <div id="resultScore"></div>
       <div id="resultMsg"></div>
-      <pre id="resultJson"></pre>
     </div>
   </div>
 
@@ -246,10 +235,9 @@
     const dropZone  = document.getElementById('dropZone');
     const fileName  = document.getElementById('fileName');
     const submitBtn = document.getElementById('submitBtn');
-    const result    = document.getElementById('result');
-    const resultTitle = document.getElementById('resultTitle');
+    const result      = document.getElementById('result');
+    const resultScore = document.getElementById('resultScore');
     const resultMsg   = document.getElementById('resultMsg');
-    const resultJson  = document.getElementById('resultJson');
 
     // Drag & drop visual feedback
     dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
@@ -287,13 +275,13 @@
         const json = await res.json();
 
         if (res.ok) {
-          showResult('success', 'Comparativa recibida', json.message, json);
+          showResult('success', json.message, json.result?.match_score);
         } else {
           const msg = json.detail ?? 'Error desconocido';
-          showResult('error', `Error ${res.status}`, msg, null);
+          showResult('error', msg);
         }
       } catch (err) {
-        showResult('error', 'Error de red', err.message, null);
+        showResult('error', err.message);
       } finally {
         setLoading(false);
       }
@@ -306,13 +294,16 @@
         : 'Analizar';
     }
 
-    function showResult(type, title, message, data) {
+    function showResult(type, message, score) {
       result.className = type;
       result.style.display = 'block';
-      resultTitle.textContent = title;
-      resultMsg.textContent   = message;
-      resultJson.textContent  = data ? JSON.stringify(data, null, 2) : '';
-      resultJson.style.display = data ? 'block' : 'none';
+      resultMsg.textContent = message ?? '';
+      if (score !== undefined && score !== null) {
+        resultScore.textContent = `${score} / 100`;
+        resultScore.style.display = 'block';
+      } else {
+        resultScore.style.display = 'none';
+      }
     }
   </script>
 
