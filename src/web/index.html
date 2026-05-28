@@ -163,6 +163,49 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* Loading panel */
+    #loading {
+      display: none;
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    #loading .loading-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    #loading .loading-fill {
+      height: 100%;
+      width: 40%;
+      background: var(--accent);
+      border-radius: 2px;
+      animation: slide 1.4s ease-in-out infinite;
+    }
+
+    @keyframes slide {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+
+    #loading .loading-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    #loading .loading-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    #loading .loading-note strong { color: var(--accent); }
+
     /* Result panel */
     #result {
       margin-top: 1.5rem;
@@ -223,6 +266,16 @@
       <button type="submit" id="submitBtn">Analizar</button>
     </form>
 
+    <div id="loading">
+      <div class="loading-bar"><div class="loading-fill"></div></div>
+      <p class="loading-title">Analizando tu perfil&hellip;</p>
+      <p class="loading-note">
+        Esto puede tardar hasta 3 minutos.<br>
+        Tu información se procesa con un modelo <strong>local</strong> 
+        en el momento y nunca sale de este servidor.
+      </p>
+    </div>
+
     <div id="result">
       <div id="resultScore"></div>
       <div id="resultMsg"></div>
@@ -235,6 +288,7 @@
     const dropZone  = document.getElementById('dropZone');
     const fileName  = document.getElementById('fileName');
     const submitBtn = document.getElementById('submitBtn');
+    const loading     = document.getElementById('loading');
     const result      = document.getElementById('result');
     const resultScore = document.getElementById('resultScore');
     const resultMsg   = document.getElementById('resultMsg');
@@ -263,6 +317,7 @@
       e.preventDefault();
       setLoading(true);
       result.style.display = 'none';
+      loading.style.display = 'block';
 
       const data = new FormData(form);
 
@@ -284,6 +339,7 @@
         showResult('error', err.message);
       } finally {
         setLoading(false);
+        loading.style.display = 'none';
       }
     });
 

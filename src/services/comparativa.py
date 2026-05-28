@@ -3,7 +3,7 @@ from config.settings import logger, settings
 from schemas.comparativa import ComparativaResponse
 from utils.llm import analyze_cv_match
 from utils.reader import fetch_job_description
-
+from pudb import set_trace
 _INTERNAL_ERROR_MSG = "No se pudo procesar la solicitud. Por favor, inténtalo de nuevo."
 
 
@@ -14,7 +14,7 @@ class ComparativaService:
     async def comparar(
         job_url: str, cv_content: str, cv_filename: str
     ) -> ComparativaResponse:
-        """Ejecuta el pipeline completo: Jina Reader → LLM → respuesta estructurada.
+        """Ejecuta el pipeline completo: Jina Reader → Ollama → respuesta estructurada.
 
         Args:
             job_url: URL de la oferta laboral.
@@ -34,14 +34,14 @@ class ComparativaService:
                 api_key=settings.JINA_AI,
                 timeout=settings.JINA_TIMEOUT_SECONDS,
             )
+            #set_trace()
             result = await analyze_cv_match(
                 cv_content=cv_content,
                 job_description=job_description,
-                api_key=settings.LLM_API_KEY,
                 model=settings.LLM_MODEL,
-                base_url=settings.LLM_BASE_URL,
-                timeout=settings.LLM_TIMEOUT_SECONDS,
+                host=settings.OLLAMA_HOST,
             )
+            #set_trace()
         except Exception as exc:
             logger.error(
                 f"BL > ComparativaService.comparar() - Error en pipeline | {exc}"
