@@ -94,10 +94,16 @@ async def analyze_cv_match(
             raw = response.message.content or ""
             data = _extract_json(raw)
             result = ComparativaResult(**data)
-            logger.info(f"BL > analyze_cv_match() - Análisis completado | score={result.match_score}")
+            logger.info(
+                f"BL > analyze_cv_match() - Análisis completado | score={result.match_score}"
+            )
             return result
         except Exception as exc:
-            logger.warning(f"BL > analyze_cv_match() - Error en intento {attempt} | {exc}")
+            logger.warning(
+                f"BL > analyze_cv_match() - Error en intento {attempt} | {exc}"
+            )
             last_error = exc
 
-    raise RuntimeError(f"El LLM no retornó un resultado válido tras 2 intentos: {last_error}")
+    raise RuntimeError(
+        f"El LLM no retornó un resultado válido tras 2 intentos: {last_error}"
+    )
