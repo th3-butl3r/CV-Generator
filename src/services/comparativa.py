@@ -37,8 +37,8 @@ class ComparativaService:
             result = await analyze_cv_match(
                 cv_content=cv_content,
                 job_description=job_description,
-                model=settings.LLM_MODEL,
-                host=settings.OLLAMA_HOST,
+                model=settings.OPENROUTER_MODEL,
+                api_key=settings.OPENROUTER_API_KEY,
             )
         except Exception as exc:
             logger.error(

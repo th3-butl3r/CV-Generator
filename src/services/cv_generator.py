@@ -4,7 +4,7 @@ import markdown
 import weasyprint
 
 from config.settings import logger, settings
-from utils.cv_llm import generate_markdown_cv
+from utils.cv_llm import generate_cv_advice, generate_markdown_cv
 from utils.reader import fetch_job_description
 
 _TEMPLATES_DIR = "src/web/templates"
@@ -28,6 +28,44 @@ def _build_html(css: str, body_html: str) -> str:
         "</head>"
         f"<body>{body_html}</body></html>"
     )
+
+
+class CVAdvisorService:
+    """Orquesta el pipeline: Jina → LLM → consejos en Markdown."""
+
+    @staticmethod
+    async def analyze(
+        job_url: str,
+        cv_content: str,
+    ) -> str:
+        """Analiza el CV frente a una oferta y retorna consejos de optimización.
+
+        Args:
+            job_url: URL pública de la oferta laboral.
+            cv_content: Contenido del CV base en Markdown.
+
+        Returns:
+            String con los consejos en formato Markdown.
+        """
+        logger.info(f"BL > CVAdvisorService.analyze() - Iniciando | url={job_url}")
+
+        job_description = await fetch_job_description(
+            url=job_url,
+            api_key=settings.JINA_AI,
+            timeout=settings.JINA_TIMEOUT_SECONDS,
+        )
+
+        advice = await generate_cv_advice(
+            cv_content=cv_content,
+            job_description=job_description,
+            model=settings.OPENROUTER_MODEL,
+            api_key=settings.OPENROUTER_API_KEY,
+        )
+
+        logger.info(
+            f"BL > CVAdvisorService.analyze() - Análisis listo | chars={len(advice)}"
+        )
+        return advice
 
 
 class CVGeneratorService:
@@ -62,15 +100,11 @@ class CVGeneratorService:
         cv_markdown = await generate_markdown_cv(
             cv_content=cv_content,
             job_description=job_description,
-            model=settings.LLM_MODEL,
-            host=settings.OLLAMA_HOST,
+            model=settings.OPENROUTER_MODEL,
+            api_key=settings.OPENROUTER_API_KEY,
         )
 
-        body_html = markdown.markdown(
-            cv_markdown,
-            extensions=["extra", "nl2br"],
-        )
-
+        body_html = markdown.markdown(cv_markdown, extensions=["extra", "nl2br"])
         css = _extract_css(template_name)
         full_html = _build_html(css, body_html)
 

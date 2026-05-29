@@ -1,23 +1,72 @@
-from loguru import logger
-from ollama import AsyncClient
+import httpx
 
+from config.settings import logger
 
-_MAX_CV_CHARS = 2500
-_MAX_JOB_CHARS = 1000
+_MAX_CV_CHARS = 3000
+_MAX_JOB_CHARS = 2000
+_OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-_SYSTEM_PROMPT = """Eres un experto en redacción de CVs. Genera un CV profesional en Markdown, optimizado para la oferta laboral.
+_ADVICE_PROMPT = """Eres un experto en reclutamiento y optimización de CVs para sistemas ATS.
+Analiza en detalle el CV y la oferta laboral. Da consejos concretos, accionables y específicos.
+Menciona SIEMPRE elementos reales del CV y de la oferta. Nunca des consejos genéricos.
+No inventes datos que no estén en el CV.
 
-Usa EXACTAMENTE esta estructura:
+Responde ÚNICAMENTE con este formato Markdown, sin texto antes ni después:
+
+## Compatibilidad general
+
+**Nivel:** [Alto / Medio / Bajo]
+
+[3-4 oraciones explicando los puntos fuertes y las debilidades del perfil para esta oferta concreta. Sé directo.]
+
+## Palabras clave ATS — inclúyelas en tu CV
+
+**Habilidades técnicas:** [términos técnicos exactos de la oferta que faltan o deben reforzarse]
+**Herramientas y tecnologías:** [software, plataformas, frameworks mencionados en la oferta]
+**Metodologías:** [procesos, frameworks de trabajo, certificaciones requeridas]
+**Soft skills:** [competencias blandas que la oferta menciona explícitamente]
+
+## Ajustes recomendados por sección
+
+### Perfil profesional
+[Indica frases concretas que cambiar, términos de la oferta que incorporar y qué eliminar por irrelevante]
+
+### Experiencia laboral
+[Para cada puesto del CV: qué logros reformular con métricas, qué verbos de acción usar, qué responsabilidades resaltar según la oferta]
+
+### Habilidades
+[Qué agregar, reorganizar o eliminar de la sección de habilidades según los requisitos de la oferta]
+
+### Otras secciones
+[Sugerencias puntuales para educación, certificaciones, proyectos o idiomas si son relevantes para la oferta]
+
+## Fortalezas a destacar
+
+[Lista de 4-6 puntos específicos del CV que encajan directamente con la oferta y cómo presentarlos de forma más impactante]
+
+## Brechas y estrategia para compensarlas
+
+[Para cada brecha: qué requisito falta, por qué es importante en esta oferta y cómo compensarlo de forma honesta sin inventar datos]"""
+
+_CV_GENERATION_PROMPT = """Eres un experto redactor de CVs profesionales. Genera un CV en Markdown basándote EXCLUSIVAMENTE en el CV del candidato, optimizándolo para la oferta indicada.
+
+Reglas estrictas:
+- NO inventes experiencias, empresas, fechas ni habilidades que no estén en el CV original
+- SÍ reformula logros usando el vocabulario y las palabras clave de la oferta
+- SÍ reorganiza y prioriza la información según lo que más valora la oferta
+- SÍ reescribe el perfil profesional orientado directamente a la oferta
+
+Usa EXACTAMENTE esta estructura Markdown, sin texto antes ni después:
 
 # [Nombre Completo]
 
-**[Cargo objetivo]** | [email] | [teléfono] | [ciudad, país]
+**[Cargo objetivo alineado con la oferta]** | [email] | [teléfono] | [ciudad, país]
 
 ---
 
 ## Perfil Profesional
 
-[2-3 oraciones que destaquen lo más relevante para esta oferta concreta]
+[3-4 oraciones que conecten la experiencia del candidato con los requisitos de la oferta. Usa palabras clave de la oferta.]
 
 ---
 
@@ -25,8 +74,8 @@ Usa EXACTAMENTE esta estructura:
 
 ### [Cargo] — [Empresa] · [Ciudad] *(inicio – fin)*
 
-- [Logro o responsabilidad]
-- [Logro o responsabilidad]
+- [Logro reformulado con métricas si existen en el CV original]
+- [Responsabilidad relevante para la oferta, en lenguaje de la oferta]
 
 ---
 
@@ -44,55 +93,103 @@ Usa EXACTAMENTE esta estructura:
 
 ## Idiomas
 
-- **[Idioma]:** [Nivel]
+- **[Idioma]:** [Nivel]"""
 
-Reglas:
-- Extrae TODA la información del CV del candidato
-- Optimiza ÚNICAMENTE el "Perfil Profesional" para la oferta
-- NO inventes datos que no estén en el CV
-- Responde SOLO con el Markdown, sin texto adicional antes ni después"""
+
+async def _call_openrouter(
+    system_prompt: str, user_message: str, model: str, api_key: str
+) -> str:
+    """Realiza una llamada a la API de OpenRouter y retorna el contenido del mensaje.
+
+    Args:
+        system_prompt: Instrucciones de sistema para el modelo.
+        user_message: Mensaje del usuario con los datos a procesar.
+        model: ID del modelo OpenRouter a usar.
+        api_key: API key de OpenRouter.
+
+    Returns:
+        Contenido de texto de la respuesta del modelo.
+
+    Raises:
+        RuntimeError: Si la respuesta está vacía.
+    """
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message},
+        ],
+    }
+
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        response = await client.post(_OPENROUTER_URL, headers=headers, json=payload)
+        response.raise_for_status()
+
+    content = (response.json()["choices"][0]["message"]["content"] or "").strip()
+    if not content:
+        raise RuntimeError("El LLM retornó una respuesta vacía.")
+    return content
+
+
+async def generate_cv_advice(
+    cv_content: str,
+    job_description: str,
+    model: str,
+    api_key: str,
+) -> str:
+    """Genera consejos para optimizar el CV del candidato para una oferta laboral.
+
+    Args:
+        cv_content: Contenido del CV base en Markdown.
+        job_description: Texto limpio de la oferta laboral.
+        model: ID del modelo OpenRouter a usar.
+        api_key: API key de OpenRouter.
+
+    Returns:
+        String con los consejos en formato Markdown.
+    """
+    logger.info(f"BL > generate_cv_advice() - Llamando OpenRouter | model={model}")
+
+    user_message = (
+        f"CV del candidato:\n{cv_content[:_MAX_CV_CHARS]}\n\n"
+        f"Oferta laboral:\n{job_description[:_MAX_JOB_CHARS]}\n\n"
+        "Analiza el CV frente a la oferta y proporciona los consejos en el formato indicado."
+    )
+
+    result = await _call_openrouter(_ADVICE_PROMPT, user_message, model, api_key)
+    logger.info(f"BL > generate_cv_advice() - Consejos generados | chars={len(result)}")
+    return result
 
 
 async def generate_markdown_cv(
     cv_content: str,
     job_description: str,
     model: str,
-    host: str,
+    api_key: str,
 ) -> str:
-    """Genera un CV en formato Markdown optimizado para una oferta laboral.
+    """Genera un CV en Markdown optimizado para la oferta, basado en el CV original.
 
     Args:
         cv_content: Contenido del CV base en Markdown.
         job_description: Texto limpio de la oferta laboral.
-        model: Nombre del modelo Ollama a usar.
-        host: URL del servidor Ollama.
+        model: ID del modelo OpenRouter a usar.
+        api_key: API key de OpenRouter.
 
     Returns:
         String con el CV en formato Markdown.
-
-    Raises:
-        RuntimeError: Si el LLM no retorna contenido válido.
     """
-    logger.info(f"BL > generate_markdown_cv() - Llamando Ollama | model={model}")
+    logger.info(f"BL > generate_markdown_cv() - Llamando OpenRouter | model={model}")
 
-    client = AsyncClient(host=host)
     user_message = (
         f"CV del candidato:\n{cv_content[:_MAX_CV_CHARS]}\n\n"
         f"Oferta laboral:\n{job_description[:_MAX_JOB_CHARS]}\n\n"
         "Genera el CV en Markdown optimizado para esta oferta."
     )
 
-    response = await client.chat(
-        model=model,
-        messages=[
-            {"role": "system", "content": _SYSTEM_PROMPT},
-            {"role": "user", "content": user_message},
-        ],
-    )
-
-    result = (response.message.content or "").strip()
-    if not result:
-        raise RuntimeError("El LLM retornó una respuesta vacía.")
-
+    result = await _call_openrouter(_CV_GENERATION_PROMPT, user_message, model, api_key)
     logger.info(f"BL > generate_markdown_cv() - CV generado | chars={len(result)}")
     return result

@@ -17,6 +17,7 @@
       --text: #e2e4f0;
       --muted: #7b7f9e;
       --success: #4ade80;
+      --warning: #facc15;
       --error: #f87171;
       --radius: 12px;
     }
@@ -33,23 +34,32 @@
       padding: 2rem 1rem;
     }
 
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
+    header { text-align: center; margin-bottom: 2rem; }
     header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
     header h1 span { color: var(--accent); }
     header p { color: var(--muted); margin-top: 0.5rem; font-size: 0.95rem; }
 
-    /* ── Container (se expande en la pestaña CV) ─────────────────── */
-    .container {
-      width: 100%;
-      max-width: 560px;
-      transition: max-width 0.3s ease;
+    /* ── Container ───────────────────────────────────────────────── */
+    .container { width: 100%; max-width: 560px; transition: max-width 0.3s ease; }
+    .container.wide { max-width: 980px; }
+
+    /* ── OpenRouter notice ───────────────────────────────────────── */
+    .openrouter-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      background: rgba(108, 99, 255, 0.07);
+      border: 1px solid rgba(108, 99, 255, 0.25);
+      border-radius: 8px;
+      padding: 0.7rem 0.9rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+      line-height: 1.5;
     }
 
-    .container.wide { max-width: 940px; }
+    .openrouter-notice svg { flex-shrink: 0; margin-top: 1px; color: var(--accent); }
+    .openrouter-notice strong { color: var(--accent); }
 
     /* ── Tabs ────────────────────────────────────────────────────── */
     .tabs {
@@ -90,33 +100,104 @@
     .section { display: none; }
     .section.active { display: block; }
 
-    /* ── CV section two-column layout ───────────────────────────── */
-    .cv-layout {
+    /* ── Two-column layout (Optimizar CV) ───────────────────────── */
+    .two-col-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* ── Two-column layout (Generar CV) — columna derecha fija ──── */
+    .pdf-layout {
       display: grid;
       grid-template-columns: 1fr 220px;
       gap: 2rem;
+      align-items: start;
     }
 
-    /* ── Template gallery ────────────────────────────────────────── */
+    /* ── Advice panel (Optimizar CV) ─────────────────────────────── */
+    .advice-panel {
+      border-left: 1px solid var(--border);
+      padding-left: 1.75rem;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .advice-panel .panel-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+
+    .advice-placeholder {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--muted);
+      gap: 0.85rem;
+      padding: 3rem 1rem;
+    }
+
+    .advice-placeholder .placeholder-icon { font-size: 2.8rem; opacity: 0.35; }
+    .advice-placeholder p { font-size: 0.875rem; line-height: 1.6; max-width: 260px; }
+
+    /* Rendered Markdown styles */
+    .advice-content { display: none; font-size: 0.9rem; line-height: 1.7; }
+
+    .advice-content h2 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.35rem;
+      margin-top: 1.6rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .advice-content h2:first-child { margin-top: 0; }
+    .advice-content h3 { font-size: 0.88rem; font-weight: 600; color: var(--text); margin: 1rem 0 0.4rem; }
+    .advice-content p { color: #c4c7dc; margin-bottom: 0.55rem; }
+    .advice-content ul, .advice-content ol { padding-left: 1.3rem; margin-bottom: 0.6rem; }
+    .advice-content li { color: #c4c7dc; margin-bottom: 0.35rem; }
+    .advice-content strong { color: var(--text); font-weight: 600; }
+    .advice-content em { color: var(--muted); }
+
+    .advice-content code {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.82rem;
+      color: #a5b4fc;
+    }
+
+    /* ── Template gallery (Generar CV) ───────────────────────────── */
     .templates-panel {
       border-left: 1px solid var(--border);
       padding-left: 1.5rem;
     }
 
     .templates-panel .panel-label {
-      font-size: 0.8rem;
-      font-weight: 600;
+      font-size: 0.78rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.07em;
       color: var(--muted);
       margin-bottom: 0.85rem;
     }
 
-    .template-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+    .template-list { display: flex; flex-direction: column; gap: 1rem; }
 
     .template-card {
       cursor: pointer;
@@ -146,10 +227,7 @@
       pointer-events: none;
     }
 
-    .template-thumb .thumb-overlay {
-      position: absolute;
-      inset: 0;
-    }
+    .template-thumb .thumb-overlay { position: absolute; inset: 0; }
 
     .template-footer {
       display: flex;
@@ -159,11 +237,7 @@
       background: var(--surface-hover);
     }
 
-    .template-name {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text);
-    }
+    .template-name { font-size: 0.8rem; font-weight: 600; color: var(--text); }
 
     .template-badge {
       font-size: 0.7rem;
@@ -175,6 +249,20 @@
     }
 
     .template-card.selected .template-badge { display: block; }
+
+    .template-preview-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.15rem 0.45rem;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .template-preview-btn:hover { border-color: var(--accent); color: var(--accent); }
 
     /* ── Form shared styles ──────────────────────────────────────── */
     .field { margin-bottom: 1.5rem; }
@@ -240,12 +328,7 @@
 
     .drop-zone .label strong { color: var(--accent); }
 
-    .file-name {
-      margin-top: 0.6rem;
-      font-size: 0.85rem;
-      color: var(--success);
-      min-height: 1.2rem;
-    }
+    .file-name { margin-top: 0.6rem; font-size: 0.85rem; color: var(--success); min-height: 1.2rem; }
 
     button[type="submit"] {
       width: 100%;
@@ -302,11 +385,10 @@
     }
 
     .loading-title { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
-
     .loading-note { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
     .loading-note strong { color: var(--accent); }
 
-    /* ── Result panel ────────────────────────────────────────────── */
+    /* ── Result / error panel ────────────────────────────────────── */
     .result-panel {
       margin-top: 1.5rem;
       border-radius: 8px;
@@ -317,17 +399,18 @@
     }
 
     .result-panel.success { border-color: var(--success); background: rgba(74, 222, 128, 0.07); }
+    .result-panel.warning { border-color: var(--warning); background: rgba(250, 204, 21, 0.07); }
+    .result-panel.danger  { border-color: var(--error);   background: rgba(248, 113, 113, 0.07); }
     .result-panel.error   { border-color: var(--error);   background: rgba(248, 113, 113, 0.07); }
 
-    .result-score {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: var(--success);
-      display: none;
-      margin-bottom: 0.4rem;
-    }
+    .result-score { font-size: 2.5rem; font-weight: 700; display: none; margin-bottom: 0.4rem; }
 
-    .result-panel.error .result-msg { color: var(--error); }
+    .result-panel.success .result-score { color: var(--success); }
+    .result-panel.warning .result-score { color: var(--warning); }
+    .result-panel.danger  .result-score { color: var(--error); }
+
+    .result-panel.error  .result-msg { color: var(--error); }
+    .result-panel.danger .result-msg { color: var(--error); }
 
     /* ── Template preview modal ──────────────────────────────────── */
     .modal-overlay {
@@ -363,11 +446,7 @@
       flex-shrink: 0;
     }
 
-    .modal-header span {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text);
-    }
+    .modal-header span { font-size: 0.9rem; font-weight: 600; color: var(--text); }
 
     .modal-close {
       background: none;
@@ -382,44 +461,32 @@
     }
 
     .modal-close:hover { color: var(--text); background: var(--surface-hover); }
-
     .modal-body { flex: 1; overflow: hidden; }
-
-    .modal-body iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: #fff;
-    }
-
-    /* Preview button inside template card */
-    .template-preview-btn {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 0.15rem 0.45rem;
-      transition: border-color 0.15s, color 0.15s;
-    }
-
-    .template-preview-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .modal-body iframe { width: 100%; height: 100%; border: none; background: #fff; }
   </style>
 </head>
 <body>
 
   <header>
     <h1>CV <span>Match</span></h1>
-    <p>Analiza tu perfil y genera un CV optimizado para cada oferta.</p>
+    <p>Analiza tu perfil y optimiza tu CV para cada oferta laboral.</p>
   </header>
 
   <div class="container" id="main-container">
 
+    <div class="openrouter-notice">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <p>Este servicio usa <strong>OpenRouter</strong> con un modelo de IA gratuito. El contenido de tu CV y la oferta se envían a servidores externos para su procesamiento. No compartas información altamente sensible.</p>
+    </div>
+
     <nav class="tabs">
       <button class="tab active" data-tab="match">Match con la oferta</button>
-      <button class="tab" data-tab="cv">Generar CV</button>
+      <button class="tab" data-tab="cv">Optimizar CV</button>
+      <button class="tab" data-tab="pdf">Generar CV</button>
     </nav>
 
     <div class="card">
@@ -448,9 +515,8 @@
           <div class="loading-bar"><div class="loading-fill"></div></div>
           <p class="loading-title">Analizando tu perfil&hellip;</p>
           <p class="loading-note">
-            Esto puede tardar hasta 3 minutos.<br>
-            Tu información se procesa con un modelo <strong>local</strong>
-            y nunca sale de este servidor.
+            Esto puede tardar unos segundos.<br>
+            Tu información se procesa vía <strong>OpenRouter</strong>.
           </p>
         </div>
 
@@ -460,11 +526,9 @@
         </div>
       </section>
 
-      <!-- ── Generar CV ─────────────────────────────────────────── -->
+      <!-- ── Optimizar CV ──────────────────────────────────────── -->
       <section id="section-cv" class="section">
-        <div class="cv-layout">
-
-          <!-- Form -->
+        <div class="two-col-layout">
           <div>
             <form id="form-cv">
               <div class="field">
@@ -473,7 +537,7 @@
                        placeholder="https://linkedin.com/jobs/..." required />
               </div>
               <div class="field">
-                <label>Tu CV base (archivo .md)</label>
+                <label>Tu CV (archivo .md)</label>
                 <div class="drop-zone" id="cv-drop-zone">
                   <input type="file" id="cv-cv-file" name="cv_file" accept=".md" required />
                   <div class="icon">📄</div>
@@ -481,26 +545,71 @@
                 </div>
                 <div class="file-name" id="cv-file-name"></div>
               </div>
-              <input type="hidden" id="cv-template-input" name="template" value="clasico" />
-              <button type="submit" id="cv-submit-btn" data-label="Generar CV">Generar CV</button>
+              <button type="submit" id="cv-submit-btn" data-label="Obtener consejos">Obtener consejos</button>
             </form>
 
             <div class="loading-panel" id="cv-loading">
               <div class="loading-bar"><div class="loading-fill"></div></div>
-              <p class="loading-title">Generando tu CV optimizado&hellip;</p>
+              <p class="loading-title">Analizando tu CV y la oferta&hellip;</p>
               <p class="loading-note">
-                Esto puede tardar hasta 3 minutos.<br>
-                Tu información se procesa con un modelo <strong>local</strong>
-                y nunca sale de este servidor.
+                Esto puede tardar unos segundos.<br>
+                Tu información se procesa vía <strong>OpenRouter</strong>.
               </p>
             </div>
 
-            <div class="result-panel" id="cv-result">
-              <div class="result-msg" id="cv-msg"></div>
+            <div class="result-panel" id="cv-error-panel">
+              <div class="result-msg" id="cv-error-msg"></div>
             </div>
           </div>
 
-          <!-- Template gallery -->
+          <div class="advice-panel">
+            <p class="panel-label">Análisis y consejos</p>
+            <div class="advice-placeholder" id="cv-advice-placeholder">
+              <div class="placeholder-icon">💡</div>
+              <p>Aquí aparecerán los consejos para optimizar tu CV una vez que realices el análisis.</p>
+            </div>
+            <div class="advice-content" id="cv-advice-content"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Generar CV (PDF) ──────────────────────────────────── -->
+      <section id="section-pdf" class="section">
+        <div class="pdf-layout">
+          <div>
+            <form id="form-pdf">
+              <div class="field">
+                <label for="pdf-job-url">URL de la oferta laboral</label>
+                <input type="url" id="pdf-job-url" name="job_url"
+                       placeholder="https://linkedin.com/jobs/..." required />
+              </div>
+              <div class="field">
+                <label>Tu CV base (archivo .md)</label>
+                <div class="drop-zone" id="pdf-drop-zone">
+                  <input type="file" id="pdf-cv-file" name="cv_file" accept=".md" required />
+                  <div class="icon">📄</div>
+                  <div class="label">Arrastra tu archivo aquí o <strong>haz clic para seleccionar</strong></div>
+                </div>
+                <div class="file-name" id="pdf-file-name"></div>
+              </div>
+              <input type="hidden" id="pdf-template-input" name="template" value="clasico" />
+              <button type="submit" id="pdf-submit-btn" data-label="Generar CV en PDF">Generar CV en PDF</button>
+            </form>
+
+            <div class="loading-panel" id="pdf-loading">
+              <div class="loading-bar"><div class="loading-fill"></div></div>
+              <p class="loading-title">Generando tu CV optimizado&hellip;</p>
+              <p class="loading-note">
+                Esto puede tardar unos segundos.<br>
+                Tu información se procesa vía <strong>OpenRouter</strong>.
+              </p>
+            </div>
+
+            <div class="result-panel" id="pdf-result">
+              <div class="result-msg" id="pdf-msg"></div>
+            </div>
+          </div>
+
           <div class="templates-panel">
             <p class="panel-label">Plantilla</p>
             <div class="template-list" id="template-list">
@@ -539,7 +648,6 @@
 
             </div>
           </div>
-
         </div>
       </section>
 
@@ -559,9 +667,11 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
     // ── Tab navigation ────────────────────────────────────────────
     const container = document.getElementById('main-container');
+    const wideTabs  = new Set(['cv', 'pdf']);
 
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -569,15 +679,15 @@
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         tab.classList.add('active');
         document.getElementById(`section-${tab.dataset.tab}`).classList.add('active');
-        container.classList.toggle('wide', tab.dataset.tab === 'cv');
+        container.classList.toggle('wide', wideTabs.has(tab.dataset.tab));
       });
     });
 
     // ── Template selection ────────────────────────────────────────
-    const templateInput = document.getElementById('cv-template-input');
+    const templateInput = document.getElementById('pdf-template-input');
 
     document.getElementById('template-list').addEventListener('click', (e) => {
-      if (e.target.closest('.template-preview-btn')) return; // lo maneja el modal
+      if (e.target.closest('.template-preview-btn')) return;
       const card = e.target.closest('.template-card');
       if (!card) return;
       document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
@@ -593,8 +703,8 @@
     document.getElementById('template-list').addEventListener('click', (e) => {
       const btn = e.target.closest('.template-preview-btn');
       if (!btn) return;
-      modalTitle.textContent  = `Vista previa — ${btn.dataset.name}`;
-      modalIframe.src         = btn.dataset.src;
+      modalTitle.textContent = `Vista previa — ${btn.dataset.name}`;
+      modalIframe.src        = btn.dataset.src;
       modalOverlay.classList.add('open');
     });
 
@@ -667,7 +777,12 @@
         const res  = await fetch('/api/v1/comparativa/', { method: 'POST', body: new FormData(e.target) });
         const json = await res.json();
         if (res.ok) {
-          showResult('match-result', 'match-score', 'match-msg', 'success', json.message, json.result?.match_score);
+          const score = json.result?.match_score;
+          const type  = score == null ? 'success'
+                      : score >= 80   ? 'success'
+                      : score >= 70   ? 'warning'
+                      : 'danger';
+          showResult('match-result', 'match-score', 'match-msg', type, json.message, score);
         } else {
           showResult('match-result', 'match-score', 'match-msg', 'error', json.detail ?? 'Error desconocido');
         }
@@ -678,16 +793,56 @@
       }
     });
 
-    // ── CV generation form ────────────────────────────────────────
+    // ── CV optimizer form ─────────────────────────────────────────
     wireDropZone('cv-drop-zone', 'cv-cv-file', 'cv-file-name');
+
+    const advicePlaceholder = document.getElementById('cv-advice-placeholder');
+    const adviceContent     = document.getElementById('cv-advice-content');
 
     document.getElementById('form-cv').addEventListener('submit', async (e) => {
       e.preventDefault();
       setLoading('cv-submit-btn', 'cv-loading', true);
-      document.getElementById('cv-result').style.display = 'none';
+      document.getElementById('cv-error-panel').style.display = 'none';
+      adviceContent.style.display     = 'none';
+      adviceContent.innerHTML         = '';
+      advicePlaceholder.style.display = 'flex';
 
       try {
-        const res = await fetch('/api/v1/cv/generate', { method: 'POST', body: new FormData(e.target) });
+        const res  = await fetch('/api/v1/cv/generate', { method: 'POST', body: new FormData(e.target) });
+        const json = await res.json();
+
+        if (res.ok && json.advice) {
+          advicePlaceholder.style.display = 'none';
+          adviceContent.innerHTML         = marked.parse(json.advice);
+          adviceContent.style.display     = 'block';
+        } else {
+          const panel = document.getElementById('cv-error-panel');
+          const msg   = document.getElementById('cv-error-msg');
+          panel.className     = 'result-panel error';
+          panel.style.display = 'block';
+          msg.textContent     = json.detail ?? 'Error desconocido';
+        }
+      } catch (err) {
+        const panel = document.getElementById('cv-error-panel');
+        const msg   = document.getElementById('cv-error-msg');
+        panel.className     = 'result-panel error';
+        panel.style.display = 'block';
+        msg.textContent     = err.message;
+      } finally {
+        setLoading('cv-submit-btn', 'cv-loading', false);
+      }
+    });
+
+    // ── PDF generation form ───────────────────────────────────────
+    wireDropZone('pdf-drop-zone', 'pdf-cv-file', 'pdf-file-name');
+
+    document.getElementById('form-pdf').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setLoading('pdf-submit-btn', 'pdf-loading', true);
+      document.getElementById('pdf-result').style.display = 'none';
+
+      try {
+        const res = await fetch('/api/v1/cv/pdf', { method: 'POST', body: new FormData(e.target) });
 
         if (res.ok) {
           const blob = await res.blob();
@@ -697,15 +852,15 @@
           a.download = 'cv_optimizado.pdf';
           a.click();
           URL.revokeObjectURL(url);
-          showResult('cv-result', null, 'cv-msg', 'success', 'Tu CV ha sido generado y descargado.');
+          showResult('pdf-result', null, 'pdf-msg', 'success', 'Tu CV ha sido generado y descargado.');
         } else {
           const json = await res.json();
-          showResult('cv-result', null, 'cv-msg', 'error', json.detail ?? 'Error desconocido');
+          showResult('pdf-result', null, 'pdf-msg', 'error', json.detail ?? 'Error desconocido');
         }
       } catch (err) {
-        showResult('cv-result', null, 'cv-msg', 'error', err.message);
+        showResult('pdf-result', null, 'pdf-msg', 'error', err.message);
       } finally {
-        setLoading('cv-submit-btn', 'cv-loading', false);
+        setLoading('pdf-submit-btn', 'pdf-loading', false);
       }
     });
   </script>
