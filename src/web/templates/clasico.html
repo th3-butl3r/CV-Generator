@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Plantilla Clásica</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Georgia, serif;
+      font-size: 10.5pt;
+      line-height: 1.55;
+      color: #1e293b;
+      background: #fff;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 2.5rem 2.5rem;
+    }
+
+    /* Name */
+    h1 {
+      font-size: 24pt;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #1e293b;
+      border-bottom: 3px solid #2563eb;
+      padding-bottom: 0.4rem;
+      margin-bottom: 0.3rem;
+    }
+
+    /* Contact line (first <p> after h1) */
+    h1 + p {
+      font-size: 9pt;
+      color: #64748b;
+      margin-bottom: 1.4rem;
+    }
+
+    h1 + p strong { color: #2563eb; font-weight: 600; }
+
+    h1 + p a { color: #64748b; text-decoration: none; }
+
+    /* Section headers */
+    h2 {
+      font-size: 9pt;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #2563eb;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 0.2rem;
+      margin-top: 1.3rem;
+      margin-bottom: 0.7rem;
+    }
+
+    /* Job title / degree */
+    h3 {
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 0.75rem;
+      margin-bottom: 0.1rem;
+    }
+
+    p {
+      font-size: 9.5pt;
+      color: #475569;
+      margin-bottom: 0.4rem;
+    }
+
+    ul {
+      padding-left: 1.2rem;
+      margin-top: 0.3rem;
+    }
+
+    ul li {
+      font-size: 9.5pt;
+      color: #475569;
+      margin-bottom: 0.2rem;
+    }
+
+    strong { color: #1e293b; }
+
+    em { color: #64748b; font-style: italic; }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 0.5rem 0;
+    }
+
+    @media print {
+      body { padding: 0; }
+      @page { margin: 1.5cm; size: A4; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Alexandra Martínez</h1>
+  <p><strong>Desarrolladora Full Stack</strong> | alex@correo.com | +34 612 345 678 | Madrid, España</p>
+
+  <hr>
+
+  <h2>Perfil Profesional</h2>
+  <p>Desarrolladora Full Stack con 5 años de experiencia en Python y React, especializada en APIs REST y arquitecturas escalables. Apasionada por la calidad del código y las buenas prácticas de ingeniería de software.</p>
+
+  <hr>
+
+  <h2>Experiencia</h2>
+
+  <h3>Desarrolladora Backend — TechCorp · Madrid <em>(2021 – 2024)</em></h3>
+  <ul>
+    <li>Diseñé e implementé APIs REST con FastAPI, reduciendo el tiempo de respuesta en un 40%.</li>
+    <li>Lideré la migración de una arquitectura monolítica a microservicios con Docker y Kubernetes.</li>
+    <li>Colaboré con equipos de producto para definir requisitos técnicos y estimaciones.</li>
+  </ul>
+
+  <h3>Desarrolladora Junior — StartupXYZ · Barcelona <em>(2019 – 2021)</em></h3>
+  <ul>
+    <li>Desarrollé funcionalidades frontend con React y TypeScript.</li>
+    <li>Mantuve y mejoré pipelines de CI/CD con GitHub Actions.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Habilidades</h2>
+  <p><strong>Backend:</strong> Python, FastAPI, Django, PostgreSQL, Redis</p>
+  <p><strong>Frontend:</strong> React, TypeScript, Tailwind CSS</p>
+  <p><strong>DevOps:</strong> Docker, Kubernetes, AWS, GitHub Actions</p>
+
+  <hr>
+
+  <h2>Educación</h2>
+  <p><strong>Grado en Ingeniería Informática</strong> — Universidad Politécnica de Madrid <em>(2015 – 2019)</em></p>
+
+  <hr>
+
+  <h2>Idiomas</h2>
+  <ul>
+    <li><strong>Español:</strong> Nativo</li>
+    <li><strong>Inglés:</strong> Avanzado (C1)</li>
+  </ul>
+</body>
+</html>

@@ -26,8 +26,13 @@ class BaseConfig(BaseSettings):
     ENVIRONMENT: str = _env
     JINA_AI: str = env_file[f"{_env}_JINA_AI"]
     JINA_TIMEOUT_SECONDS: int = int(env_file.get(f"{_env}_JINA_TIMEOUT_SECONDS", "15"))
-    OLLAMA_HOST: str = env_file.get(f"{_env}_OLLAMA_HOST", "http://localhost:11434")
-    LLM_MODEL: str = env_file.get(f"{_env}_LLM_MODEL", "qwen2.5:1.5b")
+    OPENROUTER_API_KEY: str = env_file.get(f"{_env}_OPENROUTER_API_KEY", "")
+    OPENROUTER_MODEL: str = env_file.get(
+        f"{_env}_OPENROUTER_MODEL", "google/gemma-3-27b-it:free"
+    )
+    OPENROUTER_URL: str = env_file.get(
+        f"{env_file}_OPENROUTER_URL", "https://openrouter.ai/api/v1/chat/completions"
+    )
 
 
 logger.remove()  # Elimina cualquier configuración previa por defecto

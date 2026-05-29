@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Plantilla Moderna</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.55;
+      color: #1e293b;
+      background: #fff;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    /* Name — dark hero header */
+    h1 {
+      font-size: 22pt;
+      font-weight: 700;
+      color: #fff;
+      background: #1e293b;
+      padding: 1.8rem 2.5rem 0.6rem;
+      margin-bottom: 0;
+      letter-spacing: -0.3px;
+    }
+
+    /* Contact line */
+    h1 + p {
+      font-size: 8.5pt;
+      color: #94a3b8;
+      background: #1e293b;
+      padding: 0 2.5rem 1.4rem;
+      margin-bottom: 0;
+    }
+
+    h1 + p strong {
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+
+    h1 + p a { color: #94a3b8; text-decoration: none; }
+
+    /* Everything after the header */
+    h2, h3, p, ul, hr { padding-left: 2.5rem; padding-right: 2.5rem; }
+
+    /* Accent bar below header */
+    h1 + p + hr {
+      border: none;
+      height: 3px;
+      background: linear-gradient(90deg, #6366f1, #a5b4fc);
+      margin: 0 0 0.2rem;
+      padding: 0;
+    }
+
+    /* Section headers */
+    h2 {
+      font-size: 8.5pt;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #6366f1;
+      margin-top: 1.3rem;
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    /* Job title / degree */
+    h3 {
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 0.75rem;
+      margin-bottom: 0.1rem;
+    }
+
+    p {
+      font-size: 9.5pt;
+      color: #475569;
+      margin-bottom: 0.35rem;
+    }
+
+    ul {
+      padding-left: 3.5rem;
+      margin-top: 0.3rem;
+    }
+
+    ul li {
+      font-size: 9.5pt;
+      color: #475569;
+      margin-bottom: 0.2rem;
+    }
+
+    strong { color: #1e293b; }
+
+    em { color: #64748b; font-style: italic; }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 0.4rem 0;
+      padding: 0;
+    }
+
+    /* Last padding on page */
+    body > *:last-child { padding-bottom: 2rem; }
+
+    @media print {
+      body { }
+      @page { margin: 0; size: A4; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Carlos Rodríguez</h1>
+  <p><strong>Ingeniero de Datos</strong> | carlos@correo.com | +52 55 1234 5678 | Ciudad de México</p>
+
+  <hr>
+
+  <h2>Perfil Profesional</h2>
+  <p>Ingeniero de Datos con 6 años de experiencia diseñando pipelines de datos a escala, especializado en Spark, Airflow y plataformas cloud. Orientado a resultados con foco en la calidad y observabilidad de los datos.</p>
+
+  <hr>
+
+  <h2>Experiencia</h2>
+
+  <h3>Senior Data Engineer — DataCo · CDMX <em>(2021 – 2024)</em></h3>
+  <ul>
+    <li>Diseñé pipelines ETL procesando 50 M registros diarios con Apache Spark y Airflow.</li>
+    <li>Reduje costos de cómputo un 35% mediante optimización de particionado en GCS.</li>
+    <li>Lideré la adopción de dbt para transformaciones y documentación de modelos.</li>
+  </ul>
+
+  <h3>Data Engineer — FinTech SA · Monterrey <em>(2018 – 2021)</em></h3>
+  <ul>
+    <li>Construí el data warehouse en BigQuery con modelado dimensional.</li>
+    <li>Automaticé reportes ejecutivos integrando Looker Studio con Sheets API.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Habilidades</h2>
+  <p><strong>Procesamiento:</strong> Apache Spark, Kafka, Flink, dbt</p>
+  <p><strong>Cloud:</strong> GCP (BigQuery, Dataflow), AWS (Redshift, Glue)</p>
+  <p><strong>Lenguajes:</strong> Python, SQL, Scala</p>
+  <p><strong>Orquestación:</strong> Airflow, Prefect</p>
+
+  <hr>
+
+  <h2>Educación</h2>
+  <p><strong>Ingeniería en Sistemas Computacionales</strong> — ITESM <em>(2014 – 2018)</em></p>
+
+  <hr>
+
+  <h2>Idiomas</h2>
+  <ul>
+    <li><strong>Español:</strong> Nativo</li>
+    <li><strong>Inglés:</strong> Avanzado (B2)</li>
+  </ul>
+</body>
+</html>

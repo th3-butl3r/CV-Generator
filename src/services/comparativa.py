@@ -3,7 +3,7 @@ from config.settings import logger, settings
 from schemas.comparativa import ComparativaResponse
 from utils.llm import analyze_cv_match
 from utils.reader import fetch_job_description
-from pudb import set_trace
+
 _INTERNAL_ERROR_MSG = "No se pudo procesar la solicitud. Por favor, inténtalo de nuevo."
 
 
@@ -34,14 +34,12 @@ class ComparativaService:
                 api_key=settings.JINA_AI,
                 timeout=settings.JINA_TIMEOUT_SECONDS,
             )
-            #set_trace()
             result = await analyze_cv_match(
                 cv_content=cv_content,
                 job_description=job_description,
-                model=settings.LLM_MODEL,
-                host=settings.OLLAMA_HOST,
+                model=settings.OPENROUTER_MODEL,
+                api_key=settings.OPENROUTER_API_KEY,
             )
-            #set_trace()
         except Exception as exc:
             logger.error(
                 f"BL > ComparativaService.comparar() - Error en pipeline | {exc}"

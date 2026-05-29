@@ -17,6 +17,7 @@
       --text: #e2e4f0;
       --muted: #7b7f9e;
       --success: #4ade80;
+      --warning: #facc15;
       --error: #f87171;
       --radius: 12px;
     }
@@ -33,34 +34,237 @@
       padding: 2rem 1rem;
     }
 
-    header {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-
-    header h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-
+    header { text-align: center; margin-bottom: 2rem; }
+    header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
     header h1 span { color: var(--accent); }
+    header p { color: var(--muted); margin-top: 0.5rem; font-size: 0.95rem; }
 
-    header p {
+    /* ── Container ───────────────────────────────────────────────── */
+    .container { width: 100%; max-width: 560px; transition: max-width 0.3s ease; }
+    .container.wide { max-width: 980px; }
+
+    /* ── OpenRouter notice ───────────────────────────────────────── */
+    .openrouter-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      background: rgba(108, 99, 255, 0.07);
+      border: 1px solid rgba(108, 99, 255, 0.25);
+      border-radius: 8px;
+      padding: 0.7rem 0.9rem;
+      font-size: 0.82rem;
       color: var(--muted);
-      margin-top: 0.5rem;
-      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.5;
     }
 
+    .openrouter-notice svg { flex-shrink: 0; margin-top: 1px; color: var(--accent); }
+    .openrouter-notice strong { color: var(--accent); }
+
+    /* ── Tabs ────────────────────────────────────────────────────── */
+    .tabs {
+      display: flex;
+      gap: 0.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.3rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .tab {
+      flex: 1;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.6rem 1rem;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .tab:hover { color: var(--text); }
+    .tab.active { background: var(--accent); color: #fff; }
+
+    /* ── Card ────────────────────────────────────────────────────── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 2rem;
-      width: 100%;
-      max-width: 560px;
     }
 
+    /* ── Sections ────────────────────────────────────────────────── */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── Two-column layout (Optimizar CV) ───────────────────────── */
+    .two-col-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* ── Two-column layout (Generar CV) — columna derecha fija ──── */
+    .pdf-layout {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* ── Advice panel (Optimizar CV) ─────────────────────────────── */
+    .advice-panel {
+      border-left: 1px solid var(--border);
+      padding-left: 1.75rem;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .advice-panel .panel-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+
+    .advice-placeholder {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--muted);
+      gap: 0.85rem;
+      padding: 3rem 1rem;
+    }
+
+    .advice-placeholder .placeholder-icon { font-size: 2.8rem; opacity: 0.35; }
+    .advice-placeholder p { font-size: 0.875rem; line-height: 1.6; max-width: 260px; }
+
+    /* Rendered Markdown styles */
+    .advice-content { display: none; font-size: 0.9rem; line-height: 1.7; }
+
+    .advice-content h2 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.35rem;
+      margin-top: 1.6rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .advice-content h2:first-child { margin-top: 0; }
+    .advice-content h3 { font-size: 0.88rem; font-weight: 600; color: var(--text); margin: 1rem 0 0.4rem; }
+    .advice-content p { color: #c4c7dc; margin-bottom: 0.55rem; }
+    .advice-content ul, .advice-content ol { padding-left: 1.3rem; margin-bottom: 0.6rem; }
+    .advice-content li { color: #c4c7dc; margin-bottom: 0.35rem; }
+    .advice-content strong { color: var(--text); font-weight: 600; }
+    .advice-content em { color: var(--muted); }
+
+    .advice-content code {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.82rem;
+      color: #a5b4fc;
+    }
+
+    /* ── Template gallery (Generar CV) ───────────────────────────── */
+    .templates-panel {
+      border-left: 1px solid var(--border);
+      padding-left: 1.5rem;
+    }
+
+    .templates-panel .panel-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 0.85rem;
+    }
+
+    .template-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .template-card {
+      cursor: pointer;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+
+    .template-card:hover { border-color: var(--muted); transform: translateY(-1px); }
+    .template-card.selected { border-color: var(--accent); }
+
+    .template-thumb {
+      width: 100%;
+      height: 190px;
+      overflow: hidden;
+      background: #fff;
+      position: relative;
+    }
+
+    .template-thumb iframe {
+      width: 800px;
+      height: 1050px;
+      border: none;
+      transform: scale(0.2175);
+      transform-origin: top left;
+      pointer-events: none;
+    }
+
+    .template-thumb .thumb-overlay { position: absolute; inset: 0; }
+
+    .template-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.65rem;
+      background: var(--surface-hover);
+    }
+
+    .template-name { font-size: 0.8rem; font-weight: 600; color: var(--text); }
+
+    .template-badge {
+      font-size: 0.7rem;
+      color: var(--accent);
+      background: rgba(108, 99, 255, 0.12);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      display: none;
+    }
+
+    .template-card.selected .template-badge { display: block; }
+
+    .template-preview-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.15rem 0.45rem;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .template-preview-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Form shared styles ──────────────────────────────────────── */
     .field { margin-bottom: 1.5rem; }
 
     label {
@@ -98,8 +302,7 @@
       position: relative;
     }
 
-    .drop-zone:hover,
-    .drop-zone.drag-over {
+    .drop-zone:hover, .drop-zone.drag-over {
       border-color: var(--accent);
       background: var(--surface-hover);
     }
@@ -125,12 +328,7 @@
 
     .drop-zone .label strong { color: var(--accent); }
 
-    .file-name {
-      margin-top: 0.6rem;
-      font-size: 0.85rem;
-      color: var(--success);
-      min-height: 1.2rem;
-    }
+    .file-name { margin-top: 0.6rem; font-size: 0.85rem; color: var(--success); min-height: 1.2rem; }
 
     button[type="submit"] {
       width: 100%;
@@ -149,7 +347,6 @@
     button[type="submit"]:hover:not(:disabled) { background: var(--accent-hover); }
     button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* Spinner */
     .spinner {
       display: none;
       width: 18px;
@@ -163,14 +360,10 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Loading panel */
-    #loading {
-      display: none;
-      margin-top: 1.5rem;
-      text-align: center;
-    }
+    /* ── Loading panel ───────────────────────────────────────────── */
+    .loading-panel { display: none; margin-top: 1.5rem; text-align: center; }
 
-    #loading .loading-bar {
+    .loading-bar {
       height: 4px;
       background: var(--border);
       border-radius: 2px;
@@ -178,7 +371,7 @@
       margin-bottom: 1rem;
     }
 
-    #loading .loading-fill {
+    .loading-fill {
       height: 100%;
       width: 40%;
       background: var(--accent);
@@ -191,23 +384,12 @@
       100% { transform: translateX(350%); }
     }
 
-    #loading .loading-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 0.4rem;
-    }
+    .loading-title { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+    .loading-note { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+    .loading-note strong { color: var(--accent); }
 
-    #loading .loading-note {
-      font-size: 0.8rem;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    #loading .loading-note strong { color: var(--accent); }
-
-    /* Result panel */
-    #result {
+    /* ── Result / error panel ────────────────────────────────────── */
+    .result-panel {
       margin-top: 1.5rem;
       border-radius: 8px;
       padding: 1rem 1.25rem;
@@ -216,151 +398,471 @@
       border: 1px solid var(--border);
     }
 
-    #result.success { border-color: var(--success); background: rgba(74, 222, 128, 0.07); }
-    #result.error   { border-color: var(--error);   background: rgba(248, 113, 113, 0.07); }
+    .result-panel.success { border-color: var(--success); background: rgba(74, 222, 128, 0.07); }
+    .result-panel.warning { border-color: var(--warning); background: rgba(250, 204, 21, 0.07); }
+    .result-panel.danger  { border-color: var(--error);   background: rgba(248, 113, 113, 0.07); }
+    .result-panel.error   { border-color: var(--error);   background: rgba(248, 113, 113, 0.07); }
 
-    #resultScore {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: var(--success);
+    .result-score { font-size: 2.5rem; font-weight: 700; display: none; margin-bottom: 0.4rem; }
+
+    .result-panel.success .result-score { color: var(--success); }
+    .result-panel.warning .result-score { color: var(--warning); }
+    .result-panel.danger  .result-score { color: var(--error); }
+
+    .result-panel.error  .result-msg { color: var(--error); }
+    .result-panel.danger .result-msg { color: var(--error); }
+
+    /* ── Template preview modal ──────────────────────────────────── */
+    .modal-overlay {
       display: none;
-      margin-bottom: 0.4rem;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
     }
 
-    #result.error #resultMsg { color: var(--error); }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 90vw;
+      max-width: 860px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .modal-header span { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .modal-close:hover { color: var(--text); background: var(--surface-hover); }
+    .modal-body { flex: 1; overflow: hidden; }
+    .modal-body iframe { width: 100%; height: 100%; border: none; background: #fff; }
   </style>
 </head>
 <body>
 
   <header>
     <h1>CV <span>Match</span></h1>
-    <p>Analiza qué tan bien encaja tu perfil con una oferta laboral.</p>
+    <p>Analiza tu perfil y optimiza tu CV para cada oferta laboral.</p>
   </header>
 
-  <div class="card">
-    <form id="form">
+  <div class="container" id="main-container">
 
-      <div class="field">
-        <label for="job_url">URL de la oferta laboral</label>
-        <input
-          type="url"
-          id="job_url"
-          name="job_url"
-          placeholder="https://linkedin.com/jobs/..."
-          required
-        />
-      </div>
-
-      <div class="field">
-        <label>Tu CV (archivo .md)</label>
-        <div class="drop-zone" id="dropZone">
-          <input type="file" id="cv_file" name="cv_file" accept=".md" required />
-          <div class="icon">📄</div>
-          <div class="label">
-            Arrastra tu archivo aquí o <strong>haz clic para seleccionar</strong>
-          </div>
-        </div>
-        <div class="file-name" id="fileName"></div>
-      </div>
-
-      <button type="submit" id="submitBtn">Analizar</button>
-    </form>
-
-    <div id="loading">
-      <div class="loading-bar"><div class="loading-fill"></div></div>
-      <p class="loading-title">Analizando tu perfil&hellip;</p>
-      <p class="loading-note">
-        Esto puede tardar hasta 3 minutos.<br>
-        Tu información se procesa con un modelo <strong>local</strong> 
-        en el momento y nunca sale de este servidor.
-      </p>
+    <div class="openrouter-notice">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <p>Este servicio usa <strong>OpenRouter</strong> con un modelo de IA gratuito. El contenido de tu CV y la oferta se envían a servidores externos para su procesamiento. No compartas información altamente sensible.</p>
     </div>
 
-    <div id="result">
-      <div id="resultScore"></div>
-      <div id="resultMsg"></div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="match">Match con la oferta</button>
+      <button class="tab" data-tab="cv">Optimizar CV</button>
+      <button class="tab" data-tab="pdf">Generar CV</button>
+    </nav>
+
+    <div class="card">
+
+      <!-- ── Match ─────────────────────────────────────────────── -->
+      <section id="section-match" class="section active">
+        <form id="form-match">
+          <div class="field">
+            <label for="match-job-url">URL de la oferta laboral</label>
+            <input type="url" id="match-job-url" name="job_url"
+                   placeholder="https://linkedin.com/jobs/..." required />
+          </div>
+          <div class="field">
+            <label>Tu CV (archivo .md)</label>
+            <div class="drop-zone" id="match-drop-zone">
+              <input type="file" id="match-cv-file" name="cv_file" accept=".md" required />
+              <div class="icon">📄</div>
+              <div class="label">Arrastra tu archivo aquí o <strong>haz clic para seleccionar</strong></div>
+            </div>
+            <div class="file-name" id="match-file-name"></div>
+          </div>
+          <button type="submit" id="match-submit-btn" data-label="Analizar">Analizar</button>
+        </form>
+
+        <div class="loading-panel" id="match-loading">
+          <div class="loading-bar"><div class="loading-fill"></div></div>
+          <p class="loading-title">Analizando tu perfil&hellip;</p>
+          <p class="loading-note">
+            Esto puede tardar unos segundos.<br>
+            Tu información se procesa vía <strong>OpenRouter</strong>.
+          </p>
+        </div>
+
+        <div class="result-panel" id="match-result">
+          <div class="result-score" id="match-score"></div>
+          <div class="result-msg"  id="match-msg"></div>
+        </div>
+      </section>
+
+      <!-- ── Optimizar CV ──────────────────────────────────────── -->
+      <section id="section-cv" class="section">
+        <div class="two-col-layout">
+          <div>
+            <form id="form-cv">
+              <div class="field">
+                <label for="cv-job-url">URL de la oferta laboral</label>
+                <input type="url" id="cv-job-url" name="job_url"
+                       placeholder="https://linkedin.com/jobs/..." required />
+              </div>
+              <div class="field">
+                <label>Tu CV (archivo .md)</label>
+                <div class="drop-zone" id="cv-drop-zone">
+                  <input type="file" id="cv-cv-file" name="cv_file" accept=".md" required />
+                  <div class="icon">📄</div>
+                  <div class="label">Arrastra tu archivo aquí o <strong>haz clic para seleccionar</strong></div>
+                </div>
+                <div class="file-name" id="cv-file-name"></div>
+              </div>
+              <button type="submit" id="cv-submit-btn" data-label="Obtener consejos">Obtener consejos</button>
+            </form>
+
+            <div class="loading-panel" id="cv-loading">
+              <div class="loading-bar"><div class="loading-fill"></div></div>
+              <p class="loading-title">Analizando tu CV y la oferta&hellip;</p>
+              <p class="loading-note">
+                Esto puede tardar unos segundos.<br>
+                Tu información se procesa vía <strong>OpenRouter</strong>.
+              </p>
+            </div>
+
+            <div class="result-panel" id="cv-error-panel">
+              <div class="result-msg" id="cv-error-msg"></div>
+            </div>
+          </div>
+
+          <div class="advice-panel">
+            <p class="panel-label">Análisis y consejos</p>
+            <div class="advice-placeholder" id="cv-advice-placeholder">
+              <div class="placeholder-icon">💡</div>
+              <p>Aquí aparecerán los consejos para optimizar tu CV una vez que realices el análisis.</p>
+            </div>
+            <div class="advice-content" id="cv-advice-content"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Generar CV (PDF) ──────────────────────────────────── -->
+      <section id="section-pdf" class="section">
+        <div class="pdf-layout">
+          <div>
+            <form id="form-pdf">
+              <div class="field">
+                <label for="pdf-job-url">URL de la oferta laboral</label>
+                <input type="url" id="pdf-job-url" name="job_url"
+                       placeholder="https://linkedin.com/jobs/..." required />
+              </div>
+              <div class="field">
+                <label>Tu CV base (archivo .md)</label>
+                <div class="drop-zone" id="pdf-drop-zone">
+                  <input type="file" id="pdf-cv-file" name="cv_file" accept=".md" required />
+                  <div class="icon">📄</div>
+                  <div class="label">Arrastra tu archivo aquí o <strong>haz clic para seleccionar</strong></div>
+                </div>
+                <div class="file-name" id="pdf-file-name"></div>
+              </div>
+              <input type="hidden" id="pdf-template-input" name="template" value="clasico" />
+              <button type="submit" id="pdf-submit-btn" data-label="Generar CV en PDF">Generar CV en PDF</button>
+            </form>
+
+            <div class="loading-panel" id="pdf-loading">
+              <div class="loading-bar"><div class="loading-fill"></div></div>
+              <p class="loading-title">Generando tu CV optimizado&hellip;</p>
+              <p class="loading-note">
+                Esto puede tardar unos segundos.<br>
+                Tu información se procesa vía <strong>OpenRouter</strong>.
+              </p>
+            </div>
+
+            <div class="result-panel" id="pdf-result">
+              <div class="result-msg" id="pdf-msg"></div>
+            </div>
+          </div>
+
+          <div class="templates-panel">
+            <p class="panel-label">Plantilla</p>
+            <div class="template-list" id="template-list">
+
+              <div class="template-card selected" data-template="clasico">
+                <div class="template-thumb">
+                  <iframe src="/static/templates/clasico.html" scrolling="no" tabindex="-1"></iframe>
+                  <div class="thumb-overlay"></div>
+                </div>
+                <div class="template-footer">
+                  <span class="template-name">Clásico</span>
+                  <div style="display:flex;gap:0.4rem;align-items:center;">
+                    <button class="template-preview-btn"
+                            data-src="/static/templates/clasico.html"
+                            data-name="Clásico">Ver</button>
+                    <span class="template-badge">Seleccionada</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="template-card" data-template="moderno">
+                <div class="template-thumb">
+                  <iframe src="/static/templates/moderno.html" scrolling="no" tabindex="-1"></iframe>
+                  <div class="thumb-overlay"></div>
+                </div>
+                <div class="template-footer">
+                  <span class="template-name">Moderno</span>
+                  <div style="display:flex;gap:0.4rem;align-items:center;">
+                    <button class="template-preview-btn"
+                            data-src="/static/templates/moderno.html"
+                            data-name="Moderno">Ver</button>
+                    <span class="template-badge">Seleccionada</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- .card -->
+  </div><!-- .container -->
+
+  <!-- ── Template preview modal ──────────────────────────────────── -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span id="modal-title">Vista previa</span>
+        <button class="modal-close" id="modal-close" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <iframe id="modal-iframe" src="" title="Vista previa de plantilla"></iframe>
+      </div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
-    const form      = document.getElementById('form');
-    const fileInput = document.getElementById('cv_file');
-    const dropZone  = document.getElementById('dropZone');
-    const fileName  = document.getElementById('fileName');
-    const submitBtn = document.getElementById('submitBtn');
-    const loading     = document.getElementById('loading');
-    const result      = document.getElementById('result');
-    const resultScore = document.getElementById('resultScore');
-    const resultMsg   = document.getElementById('resultMsg');
+    // ── Tab navigation ────────────────────────────────────────────
+    const container = document.getElementById('main-container');
+    const wideTabs  = new Set(['cv', 'pdf']);
 
-    // Drag & drop visual feedback
-    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('drag-over');
-      if (e.dataTransfer.files.length) {
-        fileInput.files = e.dataTransfer.files;
-        showFileName(e.dataTransfer.files[0].name);
-      }
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`section-${tab.dataset.tab}`).classList.add('active');
+        container.classList.toggle('wide', wideTabs.has(tab.dataset.tab));
+      });
     });
 
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files.length) showFileName(fileInput.files[0].name);
+    // ── Template selection ────────────────────────────────────────
+    const templateInput = document.getElementById('pdf-template-input');
+
+    document.getElementById('template-list').addEventListener('click', (e) => {
+      if (e.target.closest('.template-preview-btn')) return;
+      const card = e.target.closest('.template-card');
+      if (!card) return;
+      document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      templateInput.value = card.dataset.template;
     });
 
-    function showFileName(name) {
-      fileName.textContent = `✓ ${name}`;
+    // ── Template preview modal ────────────────────────────────────
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalIframe  = document.getElementById('modal-iframe');
+    const modalTitle   = document.getElementById('modal-title');
+
+    document.getElementById('template-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.template-preview-btn');
+      if (!btn) return;
+      modalTitle.textContent = `Vista previa — ${btn.dataset.name}`;
+      modalIframe.src        = btn.dataset.src;
+      modalOverlay.classList.add('open');
+    });
+
+    function closeModal() {
+      modalOverlay.classList.remove('open');
+      modalIframe.src = '';
     }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      setLoading(true);
-      result.style.display = 'none';
-      loading.style.display = 'block';
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-      const data = new FormData(form);
+    // ── Drop zone helper ──────────────────────────────────────────
+    function wireDropZone(dropZoneId, fileInputId, fileNameId) {
+      const dropZone  = document.getElementById(dropZoneId);
+      const fileInput = document.getElementById(fileInputId);
+      const fileName  = document.getElementById(fileNameId);
+
+      dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        if (e.dataTransfer.files.length) {
+          fileInput.files = e.dataTransfer.files;
+          fileName.textContent = `✓ ${e.dataTransfer.files[0].name}`;
+        }
+      });
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) fileName.textContent = `✓ ${fileInput.files[0].name}`;
+      });
+    }
+
+    // ── Loading helpers ───────────────────────────────────────────
+    function setLoading(btnId, loadingId, active) {
+      const btn     = document.getElementById(btnId);
+      const loading = document.getElementById(loadingId);
+      btn.disabled  = active;
+      btn.innerHTML = active ? '<div class="spinner" style="display:block"></div>' : btn.dataset.label;
+      loading.style.display = active ? 'block' : 'none';
+    }
+
+    function showResult(resultId, scoreId, msgId, type, message, score) {
+      const panel = document.getElementById(resultId);
+      const msg   = document.getElementById(msgId);
+      panel.className     = `result-panel ${type}`;
+      panel.style.display = 'block';
+      msg.textContent     = message ?? '';
+
+      if (scoreId) {
+        const scoreEl = document.getElementById(scoreId);
+        if (score !== undefined && score !== null) {
+          scoreEl.textContent   = `${score} / 100`;
+          scoreEl.style.display = 'block';
+        } else {
+          scoreEl.style.display = 'none';
+        }
+      }
+    }
+
+    // ── Match form ────────────────────────────────────────────────
+    wireDropZone('match-drop-zone', 'match-cv-file', 'match-file-name');
+
+    document.getElementById('form-match').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setLoading('match-submit-btn', 'match-loading', true);
+      document.getElementById('match-result').style.display = 'none';
 
       try {
-        const res = await fetch('/api/v1/comparativa/', {
-          method: 'POST',
-          body: data,
-        });
-
+        const res  = await fetch('/api/v1/comparativa/', { method: 'POST', body: new FormData(e.target) });
         const json = await res.json();
-
         if (res.ok) {
-          showResult('success', json.message, json.result?.match_score);
+          const score = json.result?.match_score;
+          const type  = score == null ? 'success'
+                      : score >= 80   ? 'success'
+                      : score >= 70   ? 'warning'
+                      : 'danger';
+          showResult('match-result', 'match-score', 'match-msg', type, json.message, score);
         } else {
-          const msg = json.detail ?? 'Error desconocido';
-          showResult('error', msg);
+          showResult('match-result', 'match-score', 'match-msg', 'error', json.detail ?? 'Error desconocido');
         }
       } catch (err) {
-        showResult('error', err.message);
+        showResult('match-result', 'match-score', 'match-msg', 'error', err.message);
       } finally {
-        setLoading(false);
-        loading.style.display = 'none';
+        setLoading('match-submit-btn', 'match-loading', false);
       }
     });
 
-    function setLoading(loading) {
-      submitBtn.disabled = loading;
-      submitBtn.innerHTML = loading
-        ? '<div class="spinner" style="display:block"></div>'
-        : 'Analizar';
-    }
+    // ── CV optimizer form ─────────────────────────────────────────
+    wireDropZone('cv-drop-zone', 'cv-cv-file', 'cv-file-name');
 
-    function showResult(type, message, score) {
-      result.className = type;
-      result.style.display = 'block';
-      resultMsg.textContent = message ?? '';
-      if (score !== undefined && score !== null) {
-        resultScore.textContent = `${score} / 100`;
-        resultScore.style.display = 'block';
-      } else {
-        resultScore.style.display = 'none';
+    const advicePlaceholder = document.getElementById('cv-advice-placeholder');
+    const adviceContent     = document.getElementById('cv-advice-content');
+
+    document.getElementById('form-cv').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setLoading('cv-submit-btn', 'cv-loading', true);
+      document.getElementById('cv-error-panel').style.display = 'none';
+      adviceContent.style.display     = 'none';
+      adviceContent.innerHTML         = '';
+      advicePlaceholder.style.display = 'flex';
+
+      try {
+        const res  = await fetch('/api/v1/cv/generate', { method: 'POST', body: new FormData(e.target) });
+        const json = await res.json();
+
+        if (res.ok && json.advice) {
+          advicePlaceholder.style.display = 'none';
+          adviceContent.innerHTML         = marked.parse(json.advice);
+          adviceContent.style.display     = 'block';
+        } else {
+          const panel = document.getElementById('cv-error-panel');
+          const msg   = document.getElementById('cv-error-msg');
+          panel.className     = 'result-panel error';
+          panel.style.display = 'block';
+          msg.textContent     = json.detail ?? 'Error desconocido';
+        }
+      } catch (err) {
+        const panel = document.getElementById('cv-error-panel');
+        const msg   = document.getElementById('cv-error-msg');
+        panel.className     = 'result-panel error';
+        panel.style.display = 'block';
+        msg.textContent     = err.message;
+      } finally {
+        setLoading('cv-submit-btn', 'cv-loading', false);
       }
-    }
+    });
+
+    // ── PDF generation form ───────────────────────────────────────
+    wireDropZone('pdf-drop-zone', 'pdf-cv-file', 'pdf-file-name');
+
+    document.getElementById('form-pdf').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setLoading('pdf-submit-btn', 'pdf-loading', true);
+      document.getElementById('pdf-result').style.display = 'none';
+
+      try {
+        const res = await fetch('/api/v1/cv/pdf', { method: 'POST', body: new FormData(e.target) });
+
+        if (res.ok) {
+          const blob = await res.blob();
+          const url  = URL.createObjectURL(blob);
+          const a    = document.createElement('a');
+          a.href     = url;
+          a.download = 'cv_optimizado.pdf';
+          a.click();
+          URL.revokeObjectURL(url);
+          showResult('pdf-result', null, 'pdf-msg', 'success', 'Tu CV ha sido generado y descargado.');
+        } else {
+          const json = await res.json();
+          showResult('pdf-result', null, 'pdf-msg', 'error', json.detail ?? 'Error desconocido');
+        }
+      } catch (err) {
+        showResult('pdf-result', null, 'pdf-msg', 'error', err.message);
+      } finally {
+        setLoading('pdf-submit-btn', 'pdf-loading', false);
+      }
+    });
   </script>
 
 </body>

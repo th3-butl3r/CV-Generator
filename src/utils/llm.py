@@ -2,14 +2,14 @@ import json
 import re
 from typing import Any
 
-from loguru import logger
-from ollama import AsyncClient
+import httpx
 
+from config.settings import settings, logger
 from schemas.comparativa import ComparativaResult
-
 
 _MAX_JOB_CHARS = 3000
 _MAX_CV_CHARS = 2000
+_OPENROUTER_URL = settings.OPENROUTER_URL
 
 _SYSTEM_PROMPT = """Eres un evaluador de candidatos. Compara la oferta laboral con el CV y devuelve un JSON de compatibilidad.
 
@@ -55,15 +55,15 @@ async def analyze_cv_match(
     cv_content: str,
     job_description: str,
     model: str,
-    host: str,
+    api_key: str,
 ) -> ComparativaResult:
-    """Llama al LLM local (Ollama) para analizar la coincidencia CV-oferta.
+    """Llama a OpenRouter para analizar la coincidencia CV-oferta.
 
     Args:
         cv_content: Contenido del CV en formato Markdown.
         job_description: Texto limpio de la oferta laboral.
-        model: Nombre del modelo Ollama a usar.
-        host: URL del servidor Ollama.
+        model: ID del modelo OpenRouter a usar.
+        api_key: API key de OpenRouter.
 
     Returns:
         ComparativaResult con score, skills y recomendaciones.
@@ -71,33 +71,47 @@ async def analyze_cv_match(
     Raises:
         RuntimeError: Si el LLM no retorna JSON parseable tras los reintentos.
     """
-    logger.info(f"BL > analyze_cv_match() - Llamando Ollama | model={model} host={host}")
+    logger.info(f"BL > analyze_cv_match() - Llamando OpenRouter | model={model}")
 
-    client = AsyncClient(host=host)
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
     user_message = (
         f"Oferta laboral:\n{job_description[:_MAX_JOB_CHARS]}\n\n"
         f"CV del candidato:\n{cv_content[:_MAX_CV_CHARS]}\n\n"
         "Devuelve el JSON de compatibilidad."
     )
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": user_message},
+        ],
+    }
 
     last_error: Exception | None = None
     for attempt in range(1, 3):
         try:
-            response = await client.chat(
-                model=model,
-                messages=[
-                    {"role": "system", "content": _SYSTEM_PROMPT},
-                    {"role": "user", "content": user_message},
-                ],
-                format="json",
-            )
-            raw = response.message.content or ""
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                response = await client.post(
+                    _OPENROUTER_URL, headers=headers, json=payload
+                )
+                response.raise_for_status()
+
+            raw = response.json()["choices"][0]["message"]["content"] or ""
             data = _extract_json(raw)
             result = ComparativaResult(**data)
-            logger.info(f"BL > analyze_cv_match() - Análisis completado | score={result.match_score}")
+            logger.info(
+                f"BL > analyze_cv_match() - Análisis completado | score={result.match_score}"
+            )
             return result
         except Exception as exc:
-            logger.warning(f"BL > analyze_cv_match() - Error en intento {attempt} | {exc}")
+            logger.warning(
+                f"BL > analyze_cv_match() - Error en intento {attempt} | {exc}"
+            )
             last_error = exc
 
-    raise RuntimeError(f"El LLM no retornó un resultado válido tras 2 intentos: {last_error}")
+    raise RuntimeError(
+        f"El LLM no retornó un resultado válido tras 2 intentos: {last_error}"
+    )
