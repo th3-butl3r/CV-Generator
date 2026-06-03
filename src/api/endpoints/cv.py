@@ -80,6 +80,9 @@ async def analyze_cv(
 
     try:
         advice = await CVAdvisorService.analyze(job_url=job_url, cv_content=cv_text)
+    except ValueError as exc:
+        logger.warning(f"BL > analyze_cv() - URL rechazada | {exc}")
+        raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
         logger.error(f"BL > analyze_cv() - Error en pipeline | {exc}")
         raise HTTPException(status_code=500, detail=_INTERNAL_ERROR_MSG)
@@ -123,6 +126,9 @@ async def generate_cv_pdf(
             cv_content=cv_text,
             template_name=template,
         )
+    except ValueError as exc:
+        logger.warning(f"BL > generate_cv_pdf() - URL rechazada | {exc}")
+        raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
         logger.error(f"BL > generate_cv_pdf() - Error en pipeline | {exc}")
         raise HTTPException(status_code=500, detail=_INTERNAL_ERROR_MSG)
