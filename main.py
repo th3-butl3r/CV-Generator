@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from loguru import logger
-
+from src.config.settings import logger
 from src.api.router import api_router
 
 app = FastAPI(

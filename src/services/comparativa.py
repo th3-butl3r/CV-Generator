@@ -1,6 +1,10 @@
-from loguru import logger
+from config.settings import logger, settings
 
-from src.schemas.comparativa import ComparativaResponse
+from schemas.comparativa import ComparativaResponse
+from utils.llm import analyze_cv_match
+from utils.reader import fetch_job_description
+
+_INTERNAL_ERROR_MSG = "No se pudo procesar la solicitud. Por favor, inténtalo de nuevo."
 
 
 class ComparativaService:
@@ -10,7 +14,7 @@ class ComparativaService:
     async def comparar(
         job_url: str, cv_content: str, cv_filename: str
     ) -> ComparativaResponse:
-        """Ejecuta la comparativa entre la oferta laboral y el CV.
+        """Ejecuta el pipeline completo: Jina Reader → Ollama → respuesta estructurada.
 
         Args:
             job_url: URL de la oferta laboral.
@@ -18,16 +22,40 @@ class ComparativaService:
             cv_filename: Nombre del archivo subido.
 
         Returns:
-            ComparativaResponse con el resultado de la comparativa.
+            ComparativaResponse con el resultado del análisis o mensaje de error.
         """
         logger.info(
-            f"BL > ComparativaService.comparar() - Procesando comparativa para {job_url}"
+            f"BL > ComparativaService.comparar() - Iniciando pipeline | url={job_url}"
         )
 
-        # TODO: implementar lógica de comparativa (scraping + análisis con LLM)
+        try:
+            job_description = await fetch_job_description(
+                url=job_url,
+                api_key=settings.JINA_AI,
+                timeout=settings.JINA_TIMEOUT_SECONDS,
+            )
+            result = await analyze_cv_match(
+                cv_content=cv_content,
+                job_description=job_description,
+            )
+        except ValueError:
+            # Re-lanza para que el endpoint devuelva 400 (host privado o URL inválida)
+            raise
+        except Exception as exc:
+            logger.error(
+                f"BL > ComparativaService.comparar() - Error en pipeline | {exc}"
+            )
+            return ComparativaResponse(
+                job_url=job_url,
+                cv_filename=cv_filename,
+                status="error",
+                message=_INTERNAL_ERROR_MSG,
+            )
+
         return ComparativaResponse(
             job_url=job_url,
             cv_filename=cv_filename,
-            status="pending",
-            message="Comparativa recibida. Lógica de análisis pendiente de implementar.",
+            status="completed",
+            message=result.summary,
+            result=result,
         )

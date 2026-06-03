@@ -1,9 +1,9 @@
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-from loguru import logger
+from config.settings import logger
 from pydantic import HttpUrl, ValidationError
 
-from src.schemas.comparativa import ComparativaResponse
-from src.services.comparativa import ComparativaService
+from schemas.comparativa import ComparativaResponse
+from services.comparativa import ComparativaService
 
 router = APIRouter()
 
@@ -72,11 +72,15 @@ async def comparar(
         )
 
     cv_text = content.decode("utf-8")
-    result = await ComparativaService.comparar(
-        job_url=job_url,
-        cv_content=cv_text,
-        cv_filename=filename,
-    )
+    try:
+        result = await ComparativaService.comparar(
+            job_url=job_url,
+            cv_content=cv_text,
+            cv_filename=filename,
+        )
+    except ValueError as exc:
+        logger.warning(f"BL > comparar() - URL rechazada | {exc}")
+        raise HTTPException(status_code=400, detail=str(exc))
 
     logger.info(f"BL > comparar() - Comparativa completada | status={result.status}")
     return result
