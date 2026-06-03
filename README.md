@@ -36,7 +36,7 @@ FastAPI  (/api/v1/*)
 
 - **Backend:** Python 3.12, FastAPI, Uvicorn, Pydantic v2
 - **Frontend:** HTML + CSS + JS vanilla, `marked.js`, `DOMPurify`
-- **LLM:** OpenRouter (`google/gemma-3-27b-it:free` por defecto) u Ollama (`llama3.2` por defecto)
+- **LLM:** OpenRouter (`google/gemma-3-27b-it:free` por defecto) u Ollama (`qwen2.5:0.5b` por defecto)
 - **Scraping de ofertas:** [Jina AI Reader API](https://jina.ai/reader/)
 - **PDF:** WeasyPrint + plantillas HTML/CSS propias
 - **Gestión de dependencias:** Poetry
@@ -120,8 +120,8 @@ DOCKER_OPENROUTER_MODEL="google/gemma-3-27b-it:free"
 # ── Ollama (si LLM_PROVIDER=ollama) ───────────────────────────────────────────
 LOCAL_OLLAMA_HOST="http://localhost:11434"
 DOCKER_OLLAMA_HOST="http://ollama:11434"
-LOCAL_OLLAMA_MODEL="llama3.2"
-DOCKER_OLLAMA_MODEL="llama3.2"
+LOCAL_OLLAMA_MODEL="qwen2.5:0.5b"
+DOCKER_OLLAMA_MODEL="qwen2.5:0.5b"
 ```
 
 > **Privacidad:** con `LLM_PROVIDER=openrouter` el contenido del CV y la oferta se envían a servidores externos. Con `LLM_PROVIDER=ollama` todo el procesamiento es local y no sale de tu máquina.
@@ -145,7 +145,7 @@ Abre [http://localhost:8000](http://localhost:8000) en el navegador.
 Asegúrate de que Ollama esté corriendo y el modelo descargado:
 
 ```bash
-ollama pull llama3.2
+ollama pull qwen2.5:0.5b
 ollama serve          # si no arranca automáticamente
 ```
 
