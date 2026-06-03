@@ -7,3 +7,45 @@ services:
       - ENVIRONMENT=DOCKER
     volumes:
       - ./src/config/.env:/app/src/config/.env:ro
+    # Cuando el perfil ollama está activo, espera a que ollama esté sano antes de arrancar.
+    # Con required: false, este depends_on se ignora si ollama no está en el perfil activo.
+    depends_on:
+      ollama:
+        condition: service_healthy
+        required: false
+    restart: unless-stopped
+
+  # ── Ollama (modelo local) ─────────────────────────────────────────────────
+  # Solo arranca con: docker compose --profile ollama up
+  # Requiere DOCKER_LLM_PROVIDER=ollama en src/config/.env
+  ollama:
+    image: ollama/ollama
+    profiles: [ollama]
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  # Descarga el modelo en Ollama al iniciar. Se ejecuta una sola vez y termina.
+  # El modelo se controla con la variable OLLAMA_MODEL (por defecto: llama3.2).
+  # Para cambiarlo: crea un .env en la raíz del proyecto con OLLAMA_MODEL=<modelo>
+  ollama-init:
+    image: ollama/ollama
+    profiles: [ollama]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    entrypoint: ["/bin/sh", "-c", "ollama pull ${OLLAMA_MODEL:-llama3.2}"]
+    restart: on-failure
+
+volumes:
+  ollama_data:

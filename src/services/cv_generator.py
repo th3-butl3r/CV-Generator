@@ -58,8 +58,6 @@ class CVAdvisorService:
         advice = await generate_cv_advice(
             cv_content=cv_content,
             job_description=job_description,
-            model=settings.OPENROUTER_MODEL,
-            api_key=settings.OPENROUTER_API_KEY,
         )
 
         logger.info(
@@ -100,8 +98,6 @@ class CVGeneratorService:
         cv_markdown = await generate_markdown_cv(
             cv_content=cv_content,
             job_description=job_description,
-            model=settings.OPENROUTER_MODEL,
-            api_key=settings.OPENROUTER_API_KEY,
         )
 
         body_html = markdown.markdown(cv_markdown, extensions=["extra", "nl2br"])

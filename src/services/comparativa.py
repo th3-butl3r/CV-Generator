@@ -37,9 +37,10 @@ class ComparativaService:
             result = await analyze_cv_match(
                 cv_content=cv_content,
                 job_description=job_description,
-                model=settings.OPENROUTER_MODEL,
-                api_key=settings.OPENROUTER_API_KEY,
             )
+        except ValueError:
+            # Re-lanza para que el endpoint devuelva 400 (host privado o URL inválida)
+            raise
         except Exception as exc:
             logger.error(
                 f"BL > ComparativaService.comparar() - Error en pipeline | {exc}"

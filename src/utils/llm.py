@@ -9,7 +9,6 @@ from schemas.comparativa import ComparativaResult
 
 _MAX_JOB_CHARS = 3000
 _MAX_CV_CHARS = 2000
-_OPENROUTER_URL = settings.OPENROUTER_URL
 
 _SYSTEM_PROMPT = """Eres un evaluador de candidatos. Compara la oferta laboral con el CV y devuelve un JSON de compatibilidad.
 
@@ -33,6 +32,24 @@ Definiciones:
 - recommendations: consejos concretos para mejorar la candidatura"""
 
 
+def _llm_request_params() -> tuple[str, dict[str, str], str]:
+    """Retorna (url, headers, model) según el proveedor LLM configurado."""
+    if settings.LLM_PROVIDER == "ollama":
+        return (
+            f"{settings.OLLAMA_HOST}/v1/chat/completions",
+            {"Content-Type": "application/json"},
+            settings.OLLAMA_MODEL,
+        )
+    return (
+        settings.OPENROUTER_URL,
+        {
+            "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
+            "Content-Type": "application/json",
+        },
+        settings.OPENROUTER_MODEL,
+    )
+
+
 def _extract_json(text: str) -> dict[str, Any]:
     """Extrae un objeto JSON del texto, tolerando bloques markdown y texto extra."""
     try:
@@ -54,16 +71,12 @@ def _extract_json(text: str) -> dict[str, Any]:
 async def analyze_cv_match(
     cv_content: str,
     job_description: str,
-    model: str,
-    api_key: str,
 ) -> ComparativaResult:
-    """Llama a OpenRouter para analizar la coincidencia CV-oferta.
+    """Llama al proveedor LLM configurado para analizar la coincidencia CV-oferta.
 
     Args:
         cv_content: Contenido del CV en formato Markdown.
         job_description: Texto limpio de la oferta laboral.
-        model: ID del modelo OpenRouter a usar.
-        api_key: API key de OpenRouter.
 
     Returns:
         ComparativaResult con score, skills y recomendaciones.
@@ -71,12 +84,11 @@ async def analyze_cv_match(
     Raises:
         RuntimeError: Si el LLM no retorna JSON parseable tras los reintentos.
     """
-    logger.info(f"BL > analyze_cv_match() - Llamando OpenRouter | model={model}")
+    url, headers, model = _llm_request_params()
+    logger.info(
+        f"BL > analyze_cv_match() - Llamando {settings.LLM_PROVIDER} | model={model}"
+    )
 
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-    }
     user_message = (
         f"Oferta laboral:\n{job_description[:_MAX_JOB_CHARS]}\n\n"
         f"CV del candidato:\n{cv_content[:_MAX_CV_CHARS]}\n\n"
@@ -94,9 +106,7 @@ async def analyze_cv_match(
     for attempt in range(1, 3):
         try:
             async with httpx.AsyncClient(timeout=120.0) as client:
-                response = await client.post(
-                    _OPENROUTER_URL, headers=headers, json=payload
-                )
+                response = await client.post(url, headers=headers, json=payload)
                 response.raise_for_status()
 
             raw = response.json()["choices"][0]["message"]["content"] or ""

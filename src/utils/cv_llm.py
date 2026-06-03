@@ -1,10 +1,9 @@
 import httpx
 
-from config.settings import logger
+from config.settings import settings, logger
 
 _MAX_CV_CHARS = 3000
 _MAX_JOB_CHARS = 2000
-_OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 _ADVICE_PROMPT = """Eres un experto en reclutamiento y optimización de CVs para sistemas ATS.
 Analiza en detalle el CV y la oferta laboral. Da consejos concretos, accionables y específicos.
@@ -96,16 +95,30 @@ Usa EXACTAMENTE esta estructura Markdown, sin texto antes ni después:
 - **[Idioma]:** [Nivel]"""
 
 
-async def _call_openrouter(
-    system_prompt: str, user_message: str, model: str, api_key: str
-) -> str:
-    """Realiza una llamada a la API de OpenRouter y retorna el contenido del mensaje.
+def _llm_request_params() -> tuple[str, dict[str, str], str]:
+    """Retorna (url, headers, model) según el proveedor LLM configurado."""
+    if settings.LLM_PROVIDER == "ollama":
+        return (
+            f"{settings.OLLAMA_HOST}/v1/chat/completions",
+            {"Content-Type": "application/json"},
+            settings.OLLAMA_MODEL,
+        )
+    return (
+        settings.OPENROUTER_URL,
+        {
+            "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
+            "Content-Type": "application/json",
+        },
+        settings.OPENROUTER_MODEL,
+    )
+
+
+async def _call_llm(system_prompt: str, user_message: str) -> str:
+    """Realiza una llamada al proveedor LLM configurado y retorna el contenido del mensaje.
 
     Args:
         system_prompt: Instrucciones de sistema para el modelo.
         user_message: Mensaje del usuario con los datos a procesar.
-        model: ID del modelo OpenRouter a usar.
-        api_key: API key de OpenRouter.
 
     Returns:
         Contenido de texto de la respuesta del modelo.
@@ -113,10 +126,7 @@ async def _call_openrouter(
     Raises:
         RuntimeError: Si la respuesta está vacía.
     """
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-    }
+    url, headers, model = _llm_request_params()
     payload = {
         "model": model,
         "messages": [
@@ -126,7 +136,7 @@ async def _call_openrouter(
     }
 
     async with httpx.AsyncClient(timeout=120.0) as client:
-        response = await client.post(_OPENROUTER_URL, headers=headers, json=payload)
+        response = await client.post(url, headers=headers, json=payload)
         response.raise_for_status()
 
     content = (response.json()["choices"][0]["message"]["content"] or "").strip()
@@ -135,24 +145,19 @@ async def _call_openrouter(
     return content
 
 
-async def generate_cv_advice(
-    cv_content: str,
-    job_description: str,
-    model: str,
-    api_key: str,
-) -> str:
+async def generate_cv_advice(cv_content: str, job_description: str) -> str:
     """Genera consejos para optimizar el CV del candidato para una oferta laboral.
 
     Args:
         cv_content: Contenido del CV base en Markdown.
         job_description: Texto limpio de la oferta laboral.
-        model: ID del modelo OpenRouter a usar.
-        api_key: API key de OpenRouter.
 
     Returns:
         String con los consejos en formato Markdown.
     """
-    logger.info(f"BL > generate_cv_advice() - Llamando OpenRouter | model={model}")
+    logger.info(
+        f"BL > generate_cv_advice() - Llamando {settings.LLM_PROVIDER} | model={settings.OLLAMA_MODEL if settings.LLM_PROVIDER == 'ollama' else settings.OPENROUTER_MODEL}"
+    )
 
     user_message = (
         f"CV del candidato:\n{cv_content[:_MAX_CV_CHARS]}\n\n"
@@ -160,29 +165,24 @@ async def generate_cv_advice(
         "Analiza el CV frente a la oferta y proporciona los consejos en el formato indicado."
     )
 
-    result = await _call_openrouter(_ADVICE_PROMPT, user_message, model, api_key)
+    result = await _call_llm(_ADVICE_PROMPT, user_message)
     logger.info(f"BL > generate_cv_advice() - Consejos generados | chars={len(result)}")
     return result
 
 
-async def generate_markdown_cv(
-    cv_content: str,
-    job_description: str,
-    model: str,
-    api_key: str,
-) -> str:
+async def generate_markdown_cv(cv_content: str, job_description: str) -> str:
     """Genera un CV en Markdown optimizado para la oferta, basado en el CV original.
 
     Args:
         cv_content: Contenido del CV base en Markdown.
         job_description: Texto limpio de la oferta laboral.
-        model: ID del modelo OpenRouter a usar.
-        api_key: API key de OpenRouter.
 
     Returns:
         String con el CV en formato Markdown.
     """
-    logger.info(f"BL > generate_markdown_cv() - Llamando OpenRouter | model={model}")
+    logger.info(
+        f"BL > generate_markdown_cv() - Llamando {settings.LLM_PROVIDER} | model={settings.OLLAMA_MODEL if settings.LLM_PROVIDER == 'ollama' else settings.OPENROUTER_MODEL}"
+    )
 
     user_message = (
         f"CV del candidato:\n{cv_content[:_MAX_CV_CHARS]}\n\n"
@@ -190,6 +190,6 @@ async def generate_markdown_cv(
         "Genera el CV en Markdown optimizado para esta oferta."
     )
 
-    result = await _call_openrouter(_CV_GENERATION_PROMPT, user_message, model, api_key)
+    result = await _call_llm(_CV_GENERATION_PROMPT, user_message)
     logger.info(f"BL > generate_markdown_cv() - CV generado | chars={len(result)}")
     return result
