@@ -20,6 +20,22 @@ El CV se sube en formato **Markdown** (`.md`). La oferta laboral se lee automát
 
 ---
 
+## Vista previa
+
+### Match con la oferta
+![Compatibilidad con la oferta](docs/images/compatibilidad_oferta.png)
+
+### Optimizar CV
+![Optimización del CV](docs/images/optimizacion_cv.png)
+
+### Generar CV en PDF
+![Generador de CV](docs/images/generador_cv.png)
+
+### Comparativa entre modelos (izq. Gemma-4-31b · der. Qwen2.5:0.5b)
+![Comparativa de modelos](docs/images/comparativa_modelos_izq_gemma_der_qwan05.png)
+
+---
+
 ## Arquitectura
 
 ```
