@@ -1,5 +1,7 @@
 # CV Generator
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
 Herramienta web para analizar la compatibilidad entre un CV y una oferta laboral, optimizar el CV con consejos concretos y generar un PDF adaptado a la oferta. Construida con **FastAPI** y una interfaz HTML/CSS/JS sin frameworks adicionales.
 
 ---
